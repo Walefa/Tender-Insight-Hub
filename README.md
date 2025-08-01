@@ -98,7 +98,7 @@ docker-compose up --build
 ## API Documentation
 
 ```markdown
-## API Documentation
+
 
 Our API follows OpenAPI 3.0 specification. Interactive documentation is available when running the backend at:
 
