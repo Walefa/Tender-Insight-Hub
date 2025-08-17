@@ -1,6 +1,4 @@
 
-### DESIGN.md
-
 
 # System Design
 
