@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Box, Typography, TextField, Button, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, TextField, Button, CircularProgress, Alert, Chip } from '@mui/material';
 import api from '../utils/api';
 
 
@@ -12,6 +12,34 @@ const TenderSearch = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [profileId, setProfileId] = useState(null);
+  const [profileError, setProfileError] = useState('');
+
+  useEffect(() => {
+    let ignore = false;
+    const loadProfile = async () => {
+      try {
+        const res = await api.get('/company-profile');
+        if (!ignore) {
+          setProfileId(res.data?.id ?? null);
+          setProfileError('');
+        }
+      } catch (err) {
+        if (!ignore) {
+          setProfileId(null);
+          if (err?.response?.status === 404) {
+            setProfileError('Create a company profile to enable readiness checks.');
+          } else {
+            setProfileError('Could not load company profile.');
+          }
+        }
+      }
+    };
+    loadProfile();
+    return () => {
+      ignore = true;
+    };
+  }, []);
   const handleSearch = async () => {
     setLoading(true);
     setError('');
@@ -27,7 +55,28 @@ const TenderSearch = () => {
         }
       });
       if (res.data && Array.isArray(res.data)) {
-        setResults(res.data);
+        const normalised = res.data.map((release) => {
+          const tenderInfo = release.tender || {};
+          const tenderId = tenderInfo.id || release.id || release.ocid || '';
+          const tenderPeriod = tenderInfo.tenderPeriod || release.tenderPeriod || {};
+          const buyerInfo = tenderInfo.procuringEntity || tenderInfo.buyer || release.buyer || {};
+          const valueInfo = tenderInfo.value || release.value || {};
+
+          return {
+            id: tenderId || release.ocid,
+            ocid: release.ocid,
+            tenderId,
+            title: tenderInfo.title || release.title || 'Untitled tender',
+            description: tenderInfo.description || release.description || 'No description provided.',
+            status: tenderInfo.status || release.status || 'Unknown',
+            deadline: tenderPeriod.endDate || tenderPeriod.closingDate || '',
+            buyerName: buyerInfo.name || buyerInfo || 'Unknown buyer',
+            budget: valueInfo.amount || valueInfo.value || '',
+            matchScore: release.match_score,
+            raw: release,
+          };
+        });
+        setResults(normalised);
       } else {
         setResults([]);
       }
@@ -48,11 +97,23 @@ const TenderSearch = () => {
         <TextField label="Date To (YYYY-MM-DD)" variant="outlined" value={dateTo} onChange={e => setDateTo(e.target.value)} />
         <Button variant="contained" onClick={handleSearch}>Search</Button>
       </Box>
+      {profileError && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          {profileError}
+        </Alert>
+      )}
       {loading ? <CircularProgress /> : error ? <Alert severity="error">{error}</Alert> : (
         <>
-          {results && results.length === 0 ? <Typography>No tenders found.</Typography> : (
+          {results && results.length === 0 ? (
+            <Alert severity="info">No tenders found. If this persists, the source service may be temporarily unavailable.</Alert>
+          ) : (
             (results || []).map(tender => (
-              <TenderResultCard key={tender.id || tender.ocid} tender={tender} />
+              <TenderResultCard
+                key={tender.id || tender.ocid}
+                tender={tender}
+                profileId={profileId}
+                profileError={profileError}
+              />
             ))
           )}
         </>
@@ -62,20 +123,22 @@ const TenderSearch = () => {
 };
 
 
-function TenderResultCard({ tender }) {
+function TenderResultCard({ tender, profileId, profileError }) {
   const [summary, setSummary] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [matchResult, setMatchResult] = React.useState(null);
   const [matchLoading, setMatchLoading] = React.useState(false);
   const [matchError, setMatchError] = React.useState('');
+  const readinessScore = matchResult?.suitability_score;
 
   const handleGetSummary = async () => {
     setLoading(true);
     setError('');
     setSummary('');
     try {
-      const res = await api.get(`/tenders/${tender.id}/summary`);
+  const summaryId = tender.tenderId || tender.ocid || tender.id;
+  const res = await api.get(`/tenders/${summaryId}/summary`);
       setSummary(res.data.summary);
     } catch {
       setError('Failed to fetch AI summary.');
@@ -85,13 +148,18 @@ function TenderResultCard({ tender }) {
   };
 
   const handleMatchTender = async () => {
+    if (!profileId) {
+      setMatchError(profileError || 'Please create a company profile before running readiness checks.');
+      return;
+    }
+
     setMatchLoading(true);
     setMatchError('');
     setMatchResult(null);
     try {
-      const res = await api.post('/tenders/readiness-check', {
-        tender_id: tender.id,
-        company_profile_id: null // Replace with actual ID if needed
+      const res = await api.post('/readiness-check', {
+        tender_id: tender.ocid || tender.tenderId || tender.id,
+        company_profile_id: profileId
       });
       setMatchResult(res.data);
     } catch {
@@ -102,17 +170,27 @@ function TenderResultCard({ tender }) {
   };
 
   // Safely render buyer and value fields
-  const buyerName = tender.buyer && typeof tender.buyer === 'object' ? tender.buyer.name : tender.buyer;
-  const budgetValue = tender.value && typeof tender.value === 'object' ? tender.value.amount || JSON.stringify(tender.value) : tender.value;
+  const buyerName = tender.buyerName || 'Unknown buyer';
+  const budgetValue = tender.budget ? `R ${tender.budget}` : 'Not specified';
   return (
     <Box sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
-      <Typography variant="h6">{tender.title}</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+        <Typography variant="h6">{tender.title}</Typography>
+        {tender.raw && tender.raw._offline && (
+          <Chip size="small" color="warning" label="Sample data" />
+        )}
+        {typeof readinessScore === 'number' && (
+          <Chip size="small" color="success" label={`Readiness: ${readinessScore}%`} />
+        )}
+      </Box>
       <Typography>Description: {tender.description}</Typography>
       <Typography>Status: {tender.status}</Typography>
-      <Typography>Deadline: {tender.tenderPeriod && tender.tenderPeriod.endDate ? tender.tenderPeriod.endDate : ''}</Typography>
+      <Typography>Deadline: {tender.deadline || 'Not specified'}</Typography>
       <Typography>Buyer: {buyerName}</Typography>
       <Typography>Budget: {budgetValue}</Typography>
-      <Typography>Match Score: {tender.match_score}</Typography>
+      <Typography>
+        Readiness Score: {typeof readinessScore === 'number' ? `${readinessScore}%` : 'Not scored yet'}
+      </Typography>
       <Button
         variant="outlined"
         sx={{ mt: 1, mr: 2 }}

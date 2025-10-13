@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Alert } from '@mui/material';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext.jsx';
@@ -10,24 +10,45 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const formData = new URLSearchParams();
+      formData.append('username', email); // Map email to username
+      formData.append('password', password);
+
+      const res = await api.post('/auth/login', formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
       // Save token if needed
       const token = res.data.access_token;
       if (token) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        // Fetch user info
-        const userRes = await api.get('/auth/me');
-        login(userRes.data);
-        navigate('/dashboard');
+        const authHeader = `Bearer ${token}`;
+        api.defaults.headers.common['Authorization'] = authHeader;
+
+        // Temporary store to ensure interceptors pick up the fresh token
+        localStorage.setItem('user', JSON.stringify({ token }));
+
+        const userRes = await api.get('/auth/me', {
+          headers: {
+            Authorization: authHeader,
+          },
+        });
+
+  login({ ...userRes.data, token });
+  const params = new URLSearchParams(location.search);
+  const next = params.get('next');
+  navigate(next || '/dashboard');
       } else {
         setError('Login failed: No token received');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      console.error('Login error', err);
+      setError(err.response?.data?.detail || err.message || 'Login failed');
     }
   };
   return (

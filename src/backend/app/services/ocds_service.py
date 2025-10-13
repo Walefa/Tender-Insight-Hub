@@ -1,12 +1,16 @@
 import aiohttp
-import asyncio
+import json
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 from app.core.config import settings
 
 class OCDSService:
     def __init__(self):
-        self.base_url = settings.OCDS_API_URL
+        # Normalize API base URLs so downstream methods can compose paths reliably
+        self.base_url = settings.OCDS_API_URL.rstrip("/")
+        self.release_url = f"{self.base_url}/release"
         self.timeout = aiohttp.ClientTimeout(total=30)
+        self.offline_cache_dir = Path(__file__).resolve().parent / "offline_data"
     
     async def search_tenders(self, keywords: str, filters: Optional[Dict] = None) -> List[Dict]:
         """Search tenders from OCDS API"""
@@ -16,7 +20,7 @@ class OCDSService:
                     "text": keywords,
                     "size": 50  # Limit results
                 }
-                
+
                 # Add filters if provided
                 if filters:
                     if filters.get("province"):
@@ -26,8 +30,8 @@ class OCDSService:
                     if filters.get("budget_range"):
                         # Implement budget range filtering
                         pass
-                
-                async with session.get(f"{self.base_url}/releases", params=params) as response:
+
+                async with session.get(self.base_url, params=params) as response:
                     if response.status == 200:
                         data = await response.json()
                         return self._process_tender_data(data.get("releases", []))
@@ -39,15 +43,26 @@ class OCDSService:
     
     async def get_tender_details(self, tender_id: str) -> Optional[Dict]:
         """Get detailed information about a specific tender"""
+        release = await self._fetch_remote_release(tender_id)
+        if release:
+            return self._normalize_release(release)
+
+        fallback = self._load_offline_release(tender_id)
+        if fallback:
+            print(f"Using offline OCDS cache for {tender_id}")
+            return fallback
+
+        return None
+
+    async def _fetch_remote_release(self, tender_id: str) -> Optional[Dict]:
         try:
             async with aiohttp.ClientSession(timeout=self.timeout) as session:
-                async with session.get(f"{self.base_url}/releases/{tender_id}") as response:
+                async with session.get(f"{self.release_url}/{tender_id}") as response:
                     if response.status == 200:
                         return await response.json()
-                    return None
-        except Exception as e:
-            print(f"Error fetching tender details: {e}")
-            return None
+        except Exception as exc:
+            print(f"Error fetching tender details: {exc}")
+        return None
     
     def _process_tender_data(self, releases: List[Dict]) -> List[Dict]:
         """Process raw OCDS data into standardized format"""
@@ -99,3 +114,30 @@ class OCDSService:
             text_content.append(f"Item: {item.get('description', '')}")
         
         return " ".join(text_content)
+
+    def _normalize_release(self, release: Dict[str, Any]) -> Dict[str, Any]:
+        tender = release.get("tender", {})
+        return {
+            "ocid": release.get("ocid"),
+            "id": release.get("id"),
+            "title": tender.get("title", ""),
+            "description": tender.get("description", ""),
+            "status": tender.get("status", ""),
+            "documents": tender.get("documents", []),
+            "items": tender.get("items", []),
+            "buyer": release.get("buyer") or tender.get("procuringEntity", {}),
+            "tender": tender,
+        }
+
+    def _load_offline_release(self, tender_id: str) -> Optional[Dict[str, Any]]:
+        cache_file = self.offline_cache_dir / f"{tender_id}.json"
+        if not cache_file.exists():
+            return None
+
+        try:
+            with cache_file.open("r", encoding="utf-8") as handle:
+                release = json.load(handle)
+            return self._normalize_release(release)
+        except Exception as exc:
+            print(f"Error loading offline tender data for {tender_id}: {exc}")
+            return None

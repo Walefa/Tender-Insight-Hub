@@ -8,6 +8,8 @@ const TenderDetails = () => {
   const [tender, setTender] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [summary, setSummary] = useState('');
+
   useEffect(() => {
     const fetchTender = async () => {
       try {
@@ -21,6 +23,27 @@ const TenderDetails = () => {
     };
     fetchTender();
   }, [id]);
+
+  useEffect(() => {
+    async function fetchSummary() {
+      try {
+        const response = await api.post('/api/summary/extract', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          data: {
+            file: 'path/to/your/file.pdf', // Replace with actual file path
+          },
+        });
+        setSummary(response.data.summary);
+      } catch (error) {
+        console.error('Error fetching summary:', error);
+      }
+    }
+
+    fetchSummary();
+  }, []);
+
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom>Tender Details</Typography>
@@ -56,13 +79,22 @@ const TenderDetails = () => {
           </Box>
           <Button variant="contained" sx={{ mt: 2 }} onClick={async () => {
             try {
-              const res = await api.post('/readiness/check', {
-                tenderId: tender.id,
-                companyProfile: tender.company_profile // or fetch from user context
+              const res = await api.post('/readiness-check', {
+                tender_id: tender.id,
+                company_profile_id: tender.company_profile?.id || 0
               });
-              alert('Suitability Score: ' + res.data.score + '\nChecklist: ' + res.data.checklist + '\nRecommendation: ' + res.data.recommendation);
+              const { suitability_score, checklist, recommendation } = res.data;
+              alert(
+                'Suitability Score: ' + suitability_score +
+                '\nChecklist: ' + JSON.stringify(checklist) +
+                '\nRecommendation: ' + recommendation
+              );
             } catch {}
           }}>Match This Tender</Button>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="h6">Fetched Summary:</Typography>
+            <Typography>{summary}</Typography>
+          </Box>
         </>
       ) : null}
     </Box>

@@ -1,24 +1,27 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, Button, TextField, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Button, TextField, CircularProgress, Alert, IconButton, Tooltip } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext.jsx';
 
 const TeamManagement = () => {
   const { user } = useContext(AuthContext);
   const [members, setMembers] = useState([]);
-  const [pendingInvites, setPendingInvites] = useState([]);
+  const [invitations, setInvitations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
+  const [inviting, setInviting] = useState(false);
   useEffect(() => {
     const fetchMembers = async () => {
       try {
         const res = await api.get('/team/members');
-        setMembers(res.data);
-        const invitesRes = await api.get('/team/invites');
-        setPendingInvites(invitesRes.data);
+        setMembers(res.data || []);
+        const invitesRes = await api.get('/team/invitations');
+        setInvitations(invitesRes.data || []);
       } catch (err) {
-        setError('Failed to load team members or invites');
+        const msg = err?.response?.data?.detail || 'Failed to load team members or invitations';
+        setError(msg);
       } finally {
         setLoading(false);
       }
@@ -26,16 +29,41 @@ const TeamManagement = () => {
     fetchMembers();
   }, [user]);
   const handleInvite = async () => {
-    setLoading(true);
+    if (!inviteEmail) return;
+    setInviting(true);
     try {
-      await api.post('/team/invite', { email: inviteEmail });
+      const res = await api.post('/team/invitations', { email: inviteEmail });
       setInviteEmail('');
-      // Optionally refresh members list
+      setInvitations(prev => [res.data, ...(prev || [])]);
     } catch (err) {
-      setError('Failed to send invitation');
+      const msg = err?.response?.data?.detail || 'Failed to send invitation';
+      setError(msg);
     } finally {
-      setLoading(false);
+      setInviting(false);
     }
+  };
+  const revokeInvitation = async (invitationId) => {
+    try {
+      await api.delete(`/team/invitations/${invitationId}`);
+      setInvitations(prev => (prev || []).filter(inv => inv.id !== invitationId));
+    } catch (err) {
+      const msg = err?.response?.data?.detail || 'Failed to revoke invitation';
+      setError(msg);
+    }
+  };
+  const copyToken = async (token) => {
+    try {
+      await navigator.clipboard.writeText(token);
+      alert('Invitation token copied to clipboard');
+    } catch {}
+  };
+  const copyInviteLink = async (token) => {
+    try {
+      const origin = window.location.origin;
+      const link = `${origin}/invite/accept?token=${encodeURIComponent(token)}`;
+      await navigator.clipboard.writeText(link);
+      alert('Invitation link copied to clipboard');
+    } catch {}
   };
   return (
     <Box sx={{ p: 4 }}>
@@ -43,33 +71,41 @@ const TeamManagement = () => {
       {loading ? <CircularProgress /> : error ? <Alert severity="error">{error}</Alert> : (
         <>
           <Typography variant="h6">Team Members</Typography>
-          {members.map(member => (
+          {(members || []).map(member => (
             <Box key={member.id} sx={{ mb: 1 }}>
-              <Typography>{member.name} ({member.email}) - {member.role}</Typography>
+              <Typography>{member.full_name} ({member.email})</Typography>
             </Box>
           ))}
           <Box sx={{ mt: 2 }}>
             <TextField label="Invite by Email" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} />
-            <Button variant="contained" sx={{ ml: 2 }} onClick={handleInvite}>Invite Member</Button>
+            <Button variant="contained" sx={{ ml: 2 }} disabled={inviting} onClick={handleInvite}>
+              {inviting ? 'Sending…' : 'Invite Member'}
+            </Button>
           </Box>
-          <Typography variant="h6" sx={{ mt: 4 }}>Pending Invitations</Typography>
-          {pendingInvites.map(invite => (
-            <Box key={invite.id} sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography>{invite.email}</Typography>
-              <Button variant="outlined" color="success" onClick={async () => {
-                try {
-                  await api.post('/team/invite/accept', { inviteId: invite.id });
-                  // Optionally refresh invites
-                } catch {}
-              }}>Accept</Button>
-              <Button variant="outlined" color="error" onClick={async () => {
-                try {
-                  await api.post('/team/invite/decline', { inviteId: invite.id });
-                  // Optionally refresh invites
-                } catch {}
-              }}>Decline</Button>
-            </Box>
-          ))}
+          <Typography variant="h6" sx={{ mt: 4 }}>Invitations</Typography>
+          {(invitations || []).length === 0 ? (
+            <Typography variant="body2">No invitations yet.</Typography>
+          ) : (
+            (invitations || []).map(invite => (
+              <Box key={invite.id} sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Typography sx={{ minWidth: 240 }}>{invite.email}</Typography>
+                <Typography sx={{ minWidth: 120 }}>Status: {invite.status}</Typography>
+                <Tooltip title="Copy invite token">
+                  <IconButton size="small" onClick={() => copyToken(invite.token)}>
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Copy invite link">
+                  <IconButton size="small" onClick={() => copyInviteLink(invite.token)}>
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+                {invite.status === 'pending' && (
+                  <Button variant="outlined" color="error" onClick={() => revokeInvitation(invite.id)}>Revoke</Button>
+                )}
+              </Box>
+            ))
+          )}
         </>
       )}
     </Box>

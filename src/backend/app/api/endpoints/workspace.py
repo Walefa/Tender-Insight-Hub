@@ -1,5 +1,5 @@
 # Workspace Endpoints for Tender Insight Hub
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from app.utils.plan_utils import require_plan
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
@@ -7,6 +7,7 @@ from app.models.sql_models import WorkspaceItem, User, Team
 from app.schemas.schemas import WorkspaceItem as WorkspaceItemSchema, WorkspaceItemUpdate, WorkspaceItemCreate
 from app.api.dependencies import get_current_active_user
 from typing import List
+from sqlalchemy import select
 
 router = APIRouter()
 
@@ -49,7 +50,11 @@ async def update_workspace_item(
 	"""Update status or notes for a workspace item. Only for basic/pro plans."""
 	team = current_user.team
 	require_plan(team, ["basic", "pro"])
-	item = next((i for i in team.workspace_items if i.id == item_id), None)
+	# Fetch using the current session to avoid stale relationship state
+	result = await db.execute(
+		select(WorkspaceItem).where(WorkspaceItem.id == item_id, WorkspaceItem.team_id == team.id)
+	)
+	item = result.scalar_one_or_none()
 	if not item:
 		raise HTTPException(status_code=404, detail="Workspace item not found.")
 	for field, value in update.dict(exclude_unset=True).items():
@@ -58,3 +63,23 @@ async def update_workspace_item(
 	await db.commit()
 	await db.refresh(item)
 	return item
+
+@router.delete("/workspace/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_workspace_item(
+	item_id: int,
+	current_user: User = Depends(get_current_active_user),
+	db: AsyncSession = Depends(get_db)
+):
+	"""Remove a workspace item belonging to the current user's team."""
+	team = current_user.team
+	# Deleting an item should be allowed on all plans; if you want to restrict, uncomment:
+	# require_plan(team, ["basic", "pro"])
+	result = await db.execute(
+		select(WorkspaceItem).where(WorkspaceItem.id == item_id, WorkspaceItem.team_id == team.id)
+	)
+	item = result.scalar_one_or_none()
+	if not item:
+		raise HTTPException(status_code=404, detail="Workspace item not found.")
+	await db.delete(item)
+	await db.commit()
+	return

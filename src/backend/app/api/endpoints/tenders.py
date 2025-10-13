@@ -3,15 +3,27 @@ from typing import List, Optional
 import httpx
 from datetime import datetime
 from typing import Optional, Dict, Any
-from app.schemas.schemas import TenderSearchRequest, TenderSummary, ReadinessCheckRequest, ReadinessResult
+from pathlib import Path
+import json
+from app.schemas.schemas import (
+    TenderSearchRequest,
+    TenderSummary,
+    ReadinessCheckRequest,
+    ReadinessResult,
+    CompanyProfile as CompanyProfileSchema,
+)
 from app.services.ocds_service import OCDSService
 from app.services.ai_service import AIService
 from app.services.scoring_service import ScoringService
 from app.api.dependencies import get_current_user, get_current_active_user
-from app.models.sql_models import User, Team
+from app.models.sql_models import User, Team, WorkspaceItem
+from app.core.database import get_db
 import httpx
 import logging
 from httpx import TimeoutException
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -45,19 +57,44 @@ async def search_tenders_by_keyword(
     params["dateFrom"] = date_from
     params["dateTo"] = date_to
 
-    async with httpx.AsyncClient(timeout=20) as client:
-        response = await client.get(base_url, params=params)
-        response.raise_for_status()
-        data = response.json()
+    used_offline = False
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            response = await client.get(base_url, params=params)
+            response.raise_for_status()
+            data = response.json()
+    except (httpx.ConnectError, httpx.HTTPError, TimeoutException) as e:
+        # Try offline sample fallback
+        logger.warning(f"eTenders API unavailable or failed: {e}. Falling back to offline sample.")
+        try:
+            sample_path = Path(__file__).resolve().parents[3] / "app" / "services" / "offline_data" / "sample_releases.json"
+            if sample_path.exists():
+                with sample_path.open("r", encoding="utf-8") as f:
+                    data = json.load(f)
+                used_offline = True
+            else:
+                logger.warning("Offline sample not found at %s", sample_path)
+                return []
+        except Exception as offline_exc:
+            logger.error(f"Failed to load offline sample: {offline_exc}")
+            return []
+    except Exception as e:
+        logger.error(f"Unexpected error calling eTenders API: {e}")
+        return []
 
     # The eTenders API returns a list of releases in 'releases' key
     releases = data.get("releases", [])
+    if used_offline:
+        # Annotate releases to signal frontend that these are sample records
+        for rel in releases:
+            rel["_offline"] = True
     filtered = []
 
     for tender in releases:
         tender_data = tender.get("tender", {})
         title = tender_data.get("title", "") or ""
-        description = tender.get("description", "") or ""
+        # Prefer nested tender.description if present, fall back to top-level
+        description = tender_data.get("description", "") or tender.get("description", "") or ""
         tender_province = tender_data.get("province", "") or ""
         main_category = tender_data.get("mainProcurementCategory", "") or ""
         addl_categories = tender_data.get("additionalProcurementCategories", []) or []
@@ -68,7 +105,6 @@ async def search_tenders_by_keyword(
         province_norm = tender_province.strip().lower()
         main_category_norm = main_category.strip().lower()
         addl_categories_norm = [str(cat).strip().lower() for cat in addl_categories]
-
 
         # Keyword filter (partial, in multiple fields, allow first 3 letters match)
         if keyword:
@@ -159,7 +195,8 @@ async def get_tender_summary(
 @router.post("/readiness-check", response_model=ReadinessResult)
 async def check_readiness(
     request: ReadinessCheckRequest,
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
 ):
     """Check company readiness for a tender. Only for basic/pro plans."""
     from app.utils.plan_utils import require_plan
@@ -168,16 +205,73 @@ async def check_readiness(
     tender_data = await ocds_service.get_tender_details(request.tender_id)
     if not tender_data:
         raise HTTPException(status_code=404, detail="Tender not found")
-    # Get company profile
-    company_profile = current_user.team.company_profile
+    # Reload user with company profile to avoid lazy-loading issues
+    user_with_profile = await db.execute(
+        select(User)
+        .options(selectinload(User.team).selectinload(Team.company_profile))
+        .where(User.id == current_user.id)
+    )
+    user_entity = user_with_profile.scalar_one_or_none()
+    if not user_entity or not user_entity.team:
+        raise HTTPException(status_code=404, detail="Team not found")
+
+    company_profile = user_entity.team.company_profile
     if not company_profile:
         raise HTTPException(status_code=404, detail="Company profile not found")
+
+    if request.company_profile_id and request.company_profile_id != company_profile.id:
+        raise HTTPException(status_code=403, detail="Company profile access denied")
+    # Convert ORM model into a plain dict so downstream scoring logic can
+    # safely inspect structured fields (lists, dicts, etc.).
+    company_profile_dict = CompanyProfileSchema.model_validate(company_profile).model_dump()
     # Extract requirements from tender
     document_text = await ocds_service.extract_document_text(tender_data)
     tender_requirements = await ai_service.extract_key_info(document_text)
     # Calculate score
     result = scoring_service.calculate_readiness_score(
-        tender_requirements, 
-        company_profile
+        tender_requirements,
+        company_profile_dict
     )
+    # Persist readiness score to workspace for quick access on dashboard
+    try:
+        # Try to match existing workspace items by any known identifier form
+        candidate_ids = set()
+        if request.tender_id:
+            candidate_ids.add(str(request.tender_id))
+        # Try to infer IDs from tender data
+        try:
+            t_inner = tender_data.get("tender", {}) if isinstance(tender_data, dict) else {}
+            inner_id = t_inner.get("id")
+            ocid = tender_data.get("ocid")
+            if inner_id:
+                candidate_ids.add(str(inner_id))
+            if ocid:
+                candidate_ids.add(str(ocid))
+        except Exception:
+            pass
+
+        ws_result = await db.execute(
+            select(WorkspaceItem).where(
+                WorkspaceItem.team_id == user_entity.team.id,
+                WorkspaceItem.tender_id.in_(list(candidate_ids))
+            )
+        )
+        ws_item = ws_result.scalar_one_or_none()
+        if ws_item is None:
+            # Create it if not present
+            ws_item = WorkspaceItem(
+                tender_id=(str(request.tender_id) if request.tender_id else (ocid or inner_id or "")),
+                team_id=user_entity.team.id,
+                status="pending",
+                notes="",
+                last_updated_by=current_user.id,
+                suitability_score=result.get("suitability_score")
+            )
+            db.add(ws_item)
+        else:
+            ws_item.suitability_score = result.get("suitability_score")
+            ws_item.last_updated_by = current_user.id
+        await db.commit()
+    except Exception as e:
+        logger.warning(f"Could not persist readiness score to workspace: {e}")
     return ReadinessResult(**result)

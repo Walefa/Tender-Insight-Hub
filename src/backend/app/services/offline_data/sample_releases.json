@@ -1,0 +1,29 @@
+{
+  "releases": [
+    {
+      "ocid": "ocds-9t57fa-136656",
+      "id": "ocds-9t57fa-136656-2025-10-13",
+      "tender": {
+        "id": "136656",
+        "title": "CPTC003/25",
+        "status": "active",
+        "description": "Western Cape: Various (47) Magistrate Offices: Installation of boreholes with water tanks and electrical pumps that is connected to existing water supply: Appointment of an Occupational Health and Safety Agent",
+        "tenderPeriod": {
+          "endDate": "2025-11-03T11:00:00Z"
+        },
+        "value": {
+          "amount": 0,
+          "currency": "ZAR"
+        },
+        "procuringEntity": {
+          "name": "Public Works"
+        },
+        "documents": []
+      },
+      "buyer": {
+        "id": "555",
+        "name": "Public Works"
+      }
+    }
+  ]
+}

@@ -112,3 +112,4 @@ class WorkspaceItem(WorkspaceItemBase):
     
     class Config:
         from_attributes = True
+

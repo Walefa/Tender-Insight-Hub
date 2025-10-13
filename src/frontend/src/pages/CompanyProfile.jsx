@@ -9,6 +9,7 @@ const CompanyProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editMode, setEditMode] = useState(false);
+  const [planUpgrading, setPlanUpgrading] = useState(false);
   const [form, setForm] = useState({
     company_name: '',
     industry_sector: '',
@@ -26,28 +27,93 @@ const CompanyProfile = () => {
         setForm(res.data);
       } catch (err) {
         setProfile(null);
-        setError('No company profile found. Please create one.');
+        const status = err?.response?.status;
+        const detail = err?.response?.data?.detail;
+        if (status === 401) {
+          setError('Your session has expired. Please log in again.');
+        } else if (status === 404) {
+          setError('No company profile found. Please create one.');
+        } else if (status === 403) {
+          setError(detail || 'Your current plan does not allow access to company profile.');
+        } else {
+          setError(detail || 'Could not load company profile.');
+        }
       } finally {
         setLoading(false);
       }
     };
     fetchProfile();
   }, [user]);
+
+  const upgradePlanToBasic = async () => {
+    setPlanUpgrading(true);
+    try {
+      await api.put('/team/plan', { new_plan: 'basic' });
+      setError('Plan upgraded to Basic. You can now create or update your company profile.');
+    } catch (e) {
+      setError(e?.response?.data?.detail || 'Failed to upgrade plan.');
+    } finally {
+      setPlanUpgrading(false);
+    }
+  };
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSave = async () => {
     setLoading(true);
     try {
+      const safeParseJSON = (value) => {
+        if (!value) return {};
+        if (typeof value === 'object') return value;
+        try {
+          return JSON.parse(value);
+        } catch {
+          // Fallback: wrap raw string in an object to satisfy backend JSON field
+          return { value: value.toString() };
+        }
+      };
+
+      const payload = {
+        company_name: form.company_name,
+        industry_sector: form.industry_sector,
+        services_provided: Array.isArray(form.services_provided)
+          ? form.services_provided
+          : (form.services_provided || '')
+              .split(',')
+              .map(item => item.trim())
+              .filter(Boolean),
+        certifications: typeof form.certifications === 'object'
+          ? form.certifications
+          : safeParseJSON(form.certifications),
+        geographic_coverage: Array.isArray(form.geographic_coverage)
+          ? form.geographic_coverage
+          : (form.geographic_coverage || '')
+              .split(',')
+              .map(item => item.trim())
+              .filter(Boolean),
+        years_experience: Number.parseInt(form.years_experience, 10) || 0,
+        contact_info: typeof form.contact_info === 'object'
+          ? form.contact_info
+          : safeParseJSON(form.contact_info),
+      };
+
       let res;
       if (profile) {
-        res = await api.put('/company-profile', form);
+        res = await api.put('/company-profile', payload);
       } else {
-        res = await api.post('/company-profile', form);
+        res = await api.post('/company-profile', payload);
       }
       setProfile(res.data);
       setEditMode(false);
       setError('');
     } catch (err) {
-      setError('Failed to save profile');
+      const status = err?.response?.status;
+      const detail = err?.response?.data?.detail;
+      if (status === 401) {
+        setError('Your session has expired. Please log in again.');
+      } else if (status === 403) {
+        setError(detail || 'This action is not allowed by your current plan.');
+      } else {
+        setError(detail || 'Failed to save profile');
+      }
     } finally {
       setLoading(false);
     }
@@ -57,7 +123,16 @@ const CompanyProfile = () => {
       <Typography variant="h4" gutterBottom>Company Profile</Typography>
       {loading ? <CircularProgress /> : (
         <>
-          {error && <Alert severity="error">{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+              {error.toLowerCase().includes('plan') && (
+                <Button size="small" sx={{ ml: 2 }} disabled={planUpgrading} onClick={upgradePlanToBasic} variant="outlined">
+                  {planUpgrading ? 'Upgrading…' : 'Upgrade plan to Basic'}
+                </Button>
+              )}
+            </Alert>
+          )}
           {(editMode || !profile) ? (
             <>
               <TextField label="Company Name" name="company_name" value={form.company_name || ''} onChange={handleChange} fullWidth sx={{ mb: 2 }} />

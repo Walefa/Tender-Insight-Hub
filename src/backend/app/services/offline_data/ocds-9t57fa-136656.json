@@ -1,0 +1,74 @@
+{
+  "ocid": "ocds-9t57fa-136656",
+  "id": "ocds-9t57fa-136656-2025-10-13",
+  "date": "2025-10-13T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136656",
+    "title": "CPTC003/25",
+    "status": "active",
+    "mainProcurementCategory": "",
+    "additionalProcurementCategories": [
+      "consultingServices"
+    ],
+    "description": "Western Cape: Various (47) Magistrate Offices: Installation of boreholes with water tanks and electrical pumps that is connected to existing water supply: Appointment of an Occupational Health and Safety Agent",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "082004e1-24bb-401d-a1e8-42f0bc0aabfd",
+        "documentType": "basic",
+        "title": "CPTC003 25 TENDER DOCUMENT.pdf",
+        "description": "CPTC003 25 TENDER DOCUMENT.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=082004e1-24bb-401d-a1e8-42f0bc0aabfd.pdf&downloadedFileName=CPTC003%2025%20TENDER%20DOCUMENT.pdf",
+        "datePublished": "2025-10-13T08:57:47Z",
+        "dateModified": "2025-10-13T08:57:47Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-13T00:00:00Z",
+      "endDate": "2025-11-03T11:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "555",
+      "name": "Public Works"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Bid(Open-Tender)",
+    "briefingSession": {
+      "isSession": false,
+      "compulsory": false,
+      "date": "0001-01-01T00:00:00Z",
+      "venue": "N/A"
+    },
+    "contactPerson": {
+      "name": "Ms. Zinzi Ntanjana",
+      "email": "zinzi.ntanjana@dpw.gov.za",
+      "telephoneNumber": "082-814-8864"
+    },
+    "items": []
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "555",
+    "name": "Public Works"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

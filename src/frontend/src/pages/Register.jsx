@@ -15,14 +15,16 @@ const Register = () => {
     e.preventDefault();
     setError('');
     try {
-      const res = await api.post('/auth/register', {
-        teamName,
-        companyName,
-        company_name: companyName,
-        full_name: fullName,
-        email,
-        password
-      });
+      const data = {
+        user_data: {
+          full_name: fullName,
+          email: email,
+          password: password,
+        },
+        team_name: teamName,
+      };
+
+      const res = await api.post('/auth/register', data); // Updated endpoint
       login(res.data.user); // Save user in context
       // TODO: Redirect to dashboard
     } catch (err) {

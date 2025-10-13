@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # Database
     SQL_DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost/tender_hub"
     MONGODB_URL: str = "mongodb://localhost:27017/tender_hub"
+    MONGO_DB_NAME: str = "tender_hub"  # Default MongoDB database name
     
     # Security
     SECRET_KEY: str = "your-secret-key-change-in-production"
@@ -16,7 +17,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # OCDS API
-    OCDS_API_URL: str = "https://api.etenders.gov.za/api/ocds"
+    OCDS_API_URL: str = "https://ocds-api.etenders.gov.za/api/OCDSReleases"
     
     # AI Services
     HUGGINGFACE_API_KEY: Optional[str] = None

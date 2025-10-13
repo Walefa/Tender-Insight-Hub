@@ -1,33 +1,33 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, CircularProgress, Alert, Button, TextField } from '@mui/material';
-import api from '../utils/api';
-import { AuthContext } from '../context/AuthContext.jsx';
-import { PlanContext } from '../context/PlanContext.jsx';
+import React, { useState } from 'react';
+
+import { Box, Typography, Alert, Button, TextField } from '@mui/material';
 import SavedTendersList from '../components/SavedTendersList';
-import WorkspaceAnalytics from '../components/WorkspaceAnalytics';
 import TenderDocumentUpload from '../components/TenderDocumentUpload';
 import TeamActivityFeed from '../components/TeamActivityFeed';
 
+// Simple error boundary wrapper (defined outside component to keep identity stable across renders)
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch() {
+    // Optionally log
+  }
+  render() {
+    if (this.state.hasError) {
+      return <Alert severity="error">Something went wrong in the dashboard.</Alert>;
+    }
+    return this.props.children;
+  }
+}
+
 const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState('');
-  const { user } = useContext(AuthContext);
-  const { plan } = useContext(PlanContext);
   const [tenders, setTenders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  useEffect(() => {
-    const fetchTenders = async () => {
-      try {
-        const res = await api.get('/enriched-releases', { params: { teamId: user?.teamId } });
-        setTenders(res.data);
-      } catch (err) {
-        setError('Failed to load tenders');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTenders();
-  }, [user]);
   const handleExport = () => {
     // Export filtered tenders as CSV or PDF
     let filtered = tenders;
@@ -40,8 +40,8 @@ const Dashboard = () => {
     }
     // CSV Export
     const csvRows = [
-      ["Title", "Deadline", "Match Score", "Status", "Notes", "Assigned To"],
-      ...filtered.map(t => [t.title, t.deadline, t.match_score, t.status, t.notes, t.assigned_to])
+      ["Tender ID", "Deadline", "Match Score", "Status", "Notes", "Assigned To"],
+      ...filtered.map(t => [t.tender_id, t.deadline || '', t.match_score ?? '', t.status || '', t.notes || '', t.assigned_to || ''])
     ];
     const csvContent = csvRows.map(row => row.map(String).join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -58,7 +58,7 @@ const Dashboard = () => {
       doc.text('Workspace Tenders', 10, 10);
       let y = 20;
       filtered.forEach(t => {
-        doc.text(`Title: ${t.title || ''}`, 10, y);
+        doc.text(`Tender ID: ${t.tender_id || ''}`, 10, y);
         doc.text(`Deadline: ${t.deadline || ''}`, 10, y + 6);
         doc.text(`Match Score: ${t.match_score || ''}`, 10, y + 12);
         doc.text(`Status: ${t.status || ''}`, 10, y + 18);
@@ -74,26 +74,6 @@ const Dashboard = () => {
     });
   };
 
-// Simple error boundary wrapper
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-  componentDidCatch(error, errorInfo) {
-    // Log error if needed
-  }
-  render() {
-    if (this.state.hasError) {
-      return <Alert severity="error">Something went wrong in the dashboard.</Alert>;
-    }
-    return this.props.children;
-  }
-}
-
   return (
     <ErrorBoundary>
       <Box sx={{ p: 4 }}>
@@ -107,10 +87,9 @@ class ErrorBoundary extends React.Component {
           <Button variant="outlined" href="/plan">Plan</Button>
           <Button variant="contained" color="success" onClick={handleExport}>Export Workspace (CSV/PDF)</Button>
         </Box>
-  <WorkspaceAnalytics tenders={tenders} />
   <TenderDocumentUpload />
   <TeamActivityFeed />
-  <SavedTendersList />
+  <SavedTendersList onLoaded={setTenders} />
       </Box>
     </ErrorBoundary>
   );
