@@ -1,6 +1,8 @@
 ﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import auth, companies, tenders, public, workspace, users, invitations, team
+from app.core.database import engine
+from app.models.sql_models import Base
 
 app = FastAPI(
     title="Tender Insight Hub",
@@ -29,6 +31,16 @@ app.include_router(workspace.router, prefix="/api", tags=["Workspace"])
 app.include_router(users.router, prefix="/api", tags=["Team Members"])
 app.include_router(invitations.router, prefix="/api", tags=["Invitations"])
 app.include_router(team.router, prefix="/api/team", tags=["Team Plan"])
+
+@app.on_event("startup")
+async def on_startup() -> None:
+    # Auto-create tables for local/dev environments (SQLite) to simplify setup
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as e:
+        # Avoid crashing the app if migrations are managed elsewhere
+        print(f"[startup] Database initialization skipped/failed: {e}")
 
 @app.get("/")
 async def root():

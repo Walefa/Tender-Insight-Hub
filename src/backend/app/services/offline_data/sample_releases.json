@@ -1,6 +1,18 @@
 {
   "releases": [
     {
+      "ocid": "ocds-9t57fa-136672",
+      "id": "ocds-9t57fa-136672-release",
+      "tender": {
+        "id": "136672",
+        "title": "RFQ Vetting New Employees",
+        "description": "Vetting of New Employees for a period of 24 Months as and when needed",
+        "status": "active",
+        "documents": [],
+        "items": []
+      }
+    },
+    {
       "ocid": "ocds-9t57fa-136656",
       "id": "ocds-9t57fa-136656-2025-10-13",
       "tender": {

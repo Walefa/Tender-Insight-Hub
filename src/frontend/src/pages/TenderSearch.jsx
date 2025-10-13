@@ -158,12 +158,23 @@ function TenderResultCard({ tender, profileId, profileError }) {
     setMatchResult(null);
     try {
       const res = await api.post('/readiness-check', {
+        // Prefer OCID for the eTenders release endpoint; fall back to ids
         tender_id: tender.ocid || tender.tenderId || tender.id,
         company_profile_id: profileId
       });
       setMatchResult(res.data);
-    } catch {
-      setMatchError('Failed to match tender.');
+    } catch (err) {
+      const status = err?.response?.status;
+      const detail = err?.response?.data?.detail;
+      if (status === 404 && detail) {
+        setMatchError(detail);
+      } else if (status === 403 && detail) {
+        setMatchError(detail);
+      } else if (err?.code === 'ERR_NETWORK') {
+        setMatchError('Cannot reach backend. Is the API server running?');
+      } else {
+        setMatchError(detail || 'Failed to match tender.');
+      }
     } finally {
       setMatchLoading(false);
     }
@@ -184,6 +195,9 @@ function TenderResultCard({ tender, profileId, profileError }) {
         )}
       </Box>
       <Typography>Description: {tender.description}</Typography>
+      {tender.ocid && (
+        <Typography variant="caption" color="text.secondary">OCID: {tender.ocid}</Typography>
+      )}
       <Typography>Status: {tender.status}</Typography>
       <Typography>Deadline: {tender.deadline || 'Not specified'}</Typography>
       <Typography>Buyer: {buyerName}</Typography>
