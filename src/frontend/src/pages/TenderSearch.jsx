@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Box, Typography, TextField, Button, CircularProgress, Alert, Chip } from '@mui/material';
+import { Box, Typography, TextField, Button, CircularProgress, Alert, Chip, Paper, Stack, Divider } from '@mui/material';
 import api from '../utils/api';
 
 
@@ -184,82 +184,82 @@ function TenderResultCard({ tender, profileId, profileError }) {
   const buyerName = tender.buyerName || 'Unknown buyer';
   const budgetValue = tender.budget ? `R ${tender.budget}` : 'Not specified';
   return (
-    <Box sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-        <Typography variant="h6">{tender.title}</Typography>
+    <Paper elevation={2} sx={{ mb: 3, p: 2 }}>
+      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>{tender.title}</Typography>
         {tender.raw && tender.raw._offline && (
           <Chip size="small" color="warning" label="Sample data" />
         )}
         {typeof readinessScore === 'number' && (
           <Chip size="small" color="success" label={`Readiness: ${readinessScore}%`} />
         )}
-      </Box>
-      <Typography>Description: {tender.description}</Typography>
-      {tender.ocid && (
-        <Typography variant="caption" color="text.secondary">OCID: {tender.ocid}</Typography>
-      )}
-      <Typography>Status: {tender.status}</Typography>
-      <Typography>Deadline: {tender.deadline || 'Not specified'}</Typography>
-      <Typography>Buyer: {buyerName}</Typography>
-      <Typography>Budget: {budgetValue}</Typography>
-      <Typography>
-        Readiness Score: {typeof readinessScore === 'number' ? `${readinessScore}%` : 'Not scored yet'}
-      </Typography>
-      <Button
-        variant="outlined"
-        sx={{ mt: 1, mr: 2 }}
-        onClick={async () => {
-          try {
-            await api.post('/workspace', {
-              tender_id: tender.id,
-              status: 'pending',
-              notes: '',
-            });
-            alert('Tender saved to workspace!');
-          } catch {
-            alert('Failed to save tender.');
-          }
-        }}
-      >
-        Save to Workspace
-      </Button>
-      <Button
-        variant="contained"
-        sx={{ mt: 1 }}
-        onClick={handleGetSummary}
-        disabled={loading}
-      >
-        {loading ? 'Loading...' : 'AI Summary'}
-      </Button>
-      <Button
-        variant="outlined"
-        sx={{ mt: 1, ml: 2 }}
-        onClick={handleMatchTender}
-        disabled={matchLoading}
-      >
-        {matchLoading ? 'Matching...' : 'Match Tender'}
-      </Button>
+      </Stack>
+      <Typography sx={{ mt: 1 }} color="text.secondary">{tender.description}</Typography>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 1 }}>
+        {tender.ocid && (
+          <Typography variant="caption" color="text.secondary">OCID: {tender.ocid}</Typography>
+        )}
+        <Typography variant="body2">Status: <b>{tender.status}</b></Typography>
+        <Typography variant="body2">Deadline: <b>{tender.deadline || 'Not specified'}</b></Typography>
+        <Typography variant="body2">Buyer: <b>{buyerName}</b></Typography>
+        <Typography variant="body2">Budget: <b>{budgetValue}</b></Typography>
+      </Stack>
+      <Divider sx={{ my: 2 }} />
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+        <Button
+          variant="outlined"
+          onClick={async () => {
+            try {
+              await api.post('/workspace', {
+                tender_id: tender.id,
+                status: 'pending',
+                notes: '',
+              });
+              alert('Tender saved to workspace!');
+            } catch {
+              alert('Failed to save tender.');
+            }
+          }}
+        >
+          Save to Workspace
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleGetSummary}
+          disabled={loading}
+        >
+          {loading ? 'Loading...' : 'AI Summary'}
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={handleMatchTender}
+          disabled={matchLoading}
+        >
+          {matchLoading ? 'Matching...' : 'Match Tender'}
+        </Button>
+      </Stack>
       {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
       {summary && (
-        <Box sx={{ mt: 2, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
-          <Typography variant="subtitle1">AI Summary:</Typography>
-          <Typography>{summary}</Typography>
-        </Box>
+        <Paper variant="outlined" sx={{ mt: 2, p: 2 }}>
+          <Typography variant="subtitle1">AI Summary</Typography>
+          <Typography sx={{ mt: 0.5 }}>{summary}</Typography>
+        </Paper>
       )}
       {matchError && <Alert severity="error" sx={{ mt: 2 }}>{matchError}</Alert>}
       {matchResult && (
-        <Box sx={{ mt: 2, p: 2, border: '1px solid #eee', borderRadius: 2 }}>
-          <Typography variant="subtitle1">Readiness Score: {matchResult.suitability_score}</Typography>
+        <Paper variant="outlined" sx={{ mt: 2, p: 2 }}>
+          <Typography variant="subtitle1">Readiness</Typography>
+          <Typography>Score: <b>{matchResult.suitability_score}</b></Typography>
           <Typography>Recommendation: {matchResult.recommendation}</Typography>
-          <Typography>Checklist:</Typography>
-          <ul>
+          <Typography sx={{ mt: 1 }}>Checklist:</Typography>
+          <Box component="ul" sx={{ pl: 3, mt: 0.5 }}>
             {Object.entries(matchResult.checklist || {}).map(([key, value]) => (
               <li key={key}>{key}: {value ? '✔️' : '❌'}</li>
             ))}
-          </ul>
-        </Box>
+          </Box>
+        </Paper>
       )}
-    </Box>
+    </Paper>
   );
 }
 

@@ -7,6 +7,9 @@ from app.crud.user import get_user_by_email, create_user, create_team
 from app.schemas.schemas import UserCreate, Token, User
 from pydantic import BaseModel
 from app.api.dependencies import get_current_user
+from sqlalchemy.future import select
+from app.models.sql_models import Team
+from sqlalchemy.exc import IntegrityError
 
 class RegistrationRequest(BaseModel):
     user_data: UserCreate
@@ -20,7 +23,7 @@ async def register(
 ):
     """Register a new user and create a team"""
     user_data = registration.user_data
-    team_name = registration.team_name
+    team_name = (registration.team_name or "").strip()
     # Check if user already exists
     existing_user = await get_user_by_email(db, user_data.email)
     if existing_user:
@@ -28,8 +31,21 @@ async def register(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
+    # Check if team name already exists to avoid 500 on unique constraint
+    existing_team_q = await db.execute(select(Team).where(Team.name == team_name))
+    existing_team = existing_team_q.scalar_one_or_none()
+    if existing_team:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Team name already taken"
+        )
     # Create team
-    team = await create_team(db, team_name)
+    try:
+        team = await create_team(db, team_name)
+    except IntegrityError:
+        # Graceful fallback if a race condition happened and the name was taken just now
+        await db.rollback()
+        raise HTTPException(status_code=400, detail="Team name already taken")
     # Create user
     user = await create_user(db, user_data, team.id)
     return user

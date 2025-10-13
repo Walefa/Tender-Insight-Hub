@@ -6,7 +6,6 @@ import { AuthContext } from '../context/AuthContext.jsx';
 const Register = () => {
   const { login } = useContext(AuthContext);
   const [teamName, setTeamName] = useState('');
-  const [companyName, setCompanyName] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,11 +23,14 @@ const Register = () => {
         team_name: teamName,
       };
 
-      const res = await api.post('/auth/register', data); // Updated endpoint
-      login(res.data.user); // Save user in context
-      // TODO: Redirect to dashboard
+  const res = await api.post('/auth/register', data);
+  // Backend returns the created user model as the response
+  login(res.data);
+  // Redirect to login then dashboard flow for clarity
+  // You can also auto-create a profile later
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+  const msg = err.response?.data?.detail || err.response?.data?.message || err.message || 'Registration failed';
+  setError(msg);
     }
   };
   return (
@@ -36,7 +38,6 @@ const Register = () => {
       <Typography variant="h4" gutterBottom>Register</Typography>
       <form onSubmit={handleSubmit}>
         <TextField label="Team Name" fullWidth margin="normal" required value={teamName} onChange={e => setTeamName(e.target.value)} />
-        <TextField label="Company Name" fullWidth margin="normal" required value={companyName} onChange={e => setCompanyName(e.target.value)} />
         <TextField label="Full Name" fullWidth margin="normal" required value={fullName} onChange={e => setFullName(e.target.value)} />
         <TextField label="Email" fullWidth margin="normal" required value={email} onChange={e => setEmail(e.target.value)} />
         <TextField label="Password" type="password" fullWidth margin="normal" required value={password} onChange={e => setPassword(e.target.value)} />

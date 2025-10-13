@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Box, Typography, Alert, Button, TextField } from '@mui/material';
+import { Box, Typography, Alert, Button, TextField, Paper, Stack, Divider } from '@mui/material';
 import SavedTendersList from '../components/SavedTendersList';
 import TenderDocumentUpload from '../components/TenderDocumentUpload';
 import TeamActivityFeed from '../components/TeamActivityFeed';
@@ -76,21 +76,32 @@ const Dashboard = () => {
 
   return (
     <ErrorBoundary>
-      <Box sx={{ p: 4 }}>
-        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-          <TextField label="Filter by Status" value={statusFilter} onChange={e => setStatusFilter(e.target.value)} sx={{ width: 180 }} />
-          <Typography variant="h4" gutterBottom>Workspace Dashboard</Typography>
-          <Box sx={{ flexGrow: 1 }} />
-          <Button variant="outlined" href="/search">Search Tenders</Button>
-          <Button variant="outlined" href="/profile">Company Profile</Button>
-          <Button variant="outlined" href="/team">Team</Button>
-          <Button variant="outlined" href="/plan">Plan</Button>
-          <Button variant="contained" color="success" onClick={handleExport}>Export Workspace (CSV/PDF)</Button>
-        </Box>
-  <TenderDocumentUpload />
-  <TeamActivityFeed />
-  <SavedTendersList onLoaded={setTenders} />
-      </Box>
+      <Stack spacing={3}>
+        <Paper sx={{ p: 2 }}>
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ md: 'center' }}>
+            <Typography variant="h4" sx={{ flexGrow: 1 }}>Workspace Dashboard</Typography>
+            <TextField label="Filter by Status" value={statusFilter} onChange={e => setStatusFilter(e.target.value)} sx={{ width: { xs: '100%', md: 220 } }} />
+            <Button variant="outlined" href="/search">Search Tenders</Button>
+            <Button variant="outlined" href="/profile">Company Profile</Button>
+            <Button variant="outlined" href="/team">Team</Button>
+            <Button variant="outlined" href="/plan">Plan</Button>
+            <Button variant="contained" color="success" onClick={handleExport}>Export CSV/PDF</Button>
+          </Stack>
+        </Paper>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom>Upload Tender Documents</Typography>
+          <TenderDocumentUpload />
+        </Paper>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom>Team Activity</Typography>
+          <TeamActivityFeed />
+        </Paper>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom>Saved Tenders</Typography>
+          <Divider sx={{ mb: 2 }} />
+          <SavedTendersList onLoaded={setTenders} />
+        </Paper>
+      </Stack>
     </ErrorBoundary>
   );
 };

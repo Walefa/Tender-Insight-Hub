@@ -1,3 +1,32 @@
-/* Minimal app-wide helpers; most styling comes from MUI theme */
-#root { min-height: 100vh; }
-.card { padding: 1rem; }
+/* Global app polish; most styling comes from MUI theme */
+:root {
+	--app-bg-gradient-light: radial-gradient(1200px 800px at -10% -20%, rgba(46, 125, 50, 0.06) 0%, rgba(0,0,0,0) 60%),
+														radial-gradient(800px 600px at 120% -10%, rgba(21, 101, 192, 0.06) 0%, rgba(0,0,0,0) 60%);
+	--app-bg-gradient-dark: radial-gradient(1200px 800px at -10% -20%, rgba(46, 125, 50, 0.15) 0%, rgba(0,0,0,0) 60%),
+													radial-gradient(800px 600px at 120% -10%, rgba(21, 101, 192, 0.15) 0%, rgba(0,0,0,0) 60%);
+}
+
+html, body, #root { min-height: 100vh; }
+
+/* Subtle gradient background layer under the theme */
+body.light #root {
+	background-image: var(--app-bg-gradient-light);
+	background-repeat: no-repeat;
+}
+body.dark #root {
+	background-image: var(--app-bg-gradient-dark);
+	background-repeat: no-repeat;
+}
+
+/* Shared card helper for places using className="card" */
+.card {
+	padding: 1rem;
+	border-radius: 12px;
+	background: rgba(255,255,255,0.7);
+	box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+	backdrop-filter: blur(8px);
+}
+
+/* Section spacing helpers */
+.section { margin-bottom: 1.25rem; }
+.section-lg { margin-bottom: 2rem; }

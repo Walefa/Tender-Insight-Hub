@@ -27,11 +27,23 @@ const App = () => {
     const saved = localStorage.getItem('themeMode');
     if (saved === 'dark' || saved === 'light') setMode(saved);
   }, []);
+  useEffect(() => {
+    // sync body class with current mode
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('light', 'dark');
+      document.body.classList.add(mode);
+    }
+  }, [mode]);
   const theme = useMemo(() => getTheme(mode), [mode]);
   const toggleMode = () => {
     setMode(prev => {
       const next = prev === 'light' ? 'dark' : 'light';
       localStorage.setItem('themeMode', next);
+      // update body class for global background gradients
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove(prev);
+        document.body.classList.add(next);
+      }
       return next;
     });
   };
