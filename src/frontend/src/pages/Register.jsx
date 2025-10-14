@@ -1,10 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Alert } from '@mui/material';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext.jsx';
 
 const Register = () => {
-  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [teamName, setTeamName] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,15 +23,12 @@ const Register = () => {
         },
         team_name: teamName,
       };
-
-  const res = await api.post('/auth/register', data);
-  // Backend returns the created user model as the response
-  login(res.data);
-  // Redirect to login then dashboard flow for clarity
-  // You can also auto-create a profile later
+      await api.post('/auth/register', data);
+      window.alert('Registration successful! Please log in.');
+      navigate('/login');
     } catch (err) {
-  const msg = err.response?.data?.detail || err.response?.data?.message || err.message || 'Registration failed';
-  setError(msg);
+      const msg = err.response?.data?.detail || err.response?.data?.message || err.message || 'Registration failed';
+      setError(msg);
     }
   };
   return (

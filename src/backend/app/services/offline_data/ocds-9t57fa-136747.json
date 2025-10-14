@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136747",
+  "id": "ocds-9t57fa-136747-2025-10-14",
+  "date": "2025-10-14T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136747",
+    "title": "FBC B3/2025",
+    "status": "active",
+    "mainProcurementCategory": "goods",
+    "additionalProcurementCategories": [
+      "goods"
+    ],
+    "description": "HOSPITALITY CONSUMABLES/EQUIPMENT FOR THE KITCHENS AND RESTAURANT AT OUR MUIZENBERG CAMPUS",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "c8ae27f8-0aa2-4dcb-8ece-5716e1716690",
+        "documentType": "basic",
+        "title": "TENDER NOTICE AND INVITATION TO BID - FBC B3-2025.pdf",
+        "description": "TENDER NOTICE AND INVITATION TO BID - FBC B3-2025.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=c8ae27f8-0aa2-4dcb-8ece-5716e1716690.pdf&downloadedFileName=TENDER%20NOTICE%20AND%20INVITATION%20TO%20BID%20-%20FBC%20B3-2025.pdf",
+        "datePublished": "2025-10-14T10:34:45Z",
+        "dateModified": "2025-10-14T10:34:45Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-14T00:00:00Z",
+      "endDate": "2025-10-24T11:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "823",
+      "name": "False Bay TVET College"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Quotation",
+    "briefingSession": {
+      "isSession": false,
+      "compulsory": false,
+      "date": "0001-01-01T00:00:00Z",
+      "venue": "N/A"
+    },
+    "contactPerson": {
+      "name": "Supply Chain Management",
+      "email": "tenders@falsebay.org.za",
+      "telephoneNumber": "021-787-0800"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "823",
+    "name": "False Bay TVET College"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}
