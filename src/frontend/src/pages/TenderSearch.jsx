@@ -127,18 +127,13 @@ function TenderResultCard({ tender, profileId, profileError }) {
   const [summary, setSummary] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
-  const [matchResult, setMatchResult] = React.useState(null);
-  const [matchLoading, setMatchLoading] = React.useState(false);
-  const [matchError, setMatchError] = React.useState('');
-  const readinessScore = matchResult?.suitability_score;
-
   const handleGetSummary = async () => {
     setLoading(true);
     setError('');
     setSummary('');
     try {
-  const summaryId = tender.tenderId || tender.ocid || tender.id;
-  const res = await api.get(`/tenders/${summaryId}/summary`);
+      const summaryId = tender.tenderId || tender.ocid || tender.id;
+      const res = await api.get(`/tenders/${summaryId}/summary`);
       setSummary(res.data.summary);
     } catch {
       setError('Failed to fetch AI summary.');
@@ -146,6 +141,27 @@ function TenderResultCard({ tender, profileId, profileError }) {
       setLoading(false);
     }
   };
+        <Button
+          variant="contained"
+          onClick={handleGetSummary}
+          disabled={loading}
+        >
+          {loading ? 'Loading...' : 'AI Summary'}
+        </Button>
+      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+      {summary && (
+        <Paper variant="outlined" sx={{ mt: 2, p: 2 }}>
+          <Typography variant="subtitle1">AI Summary</Typography>
+          <Typography>{summary}</Typography>
+        </Paper>
+      )}
+  // AI summary logic removed
+  const [matchResult, setMatchResult] = React.useState(null);
+  const [matchLoading, setMatchLoading] = React.useState(false);
+  const [matchError, setMatchError] = React.useState('');
+  const readinessScore = matchResult?.suitability_score;
+
+  // AI summary handler removed
 
   const handleMatchTender = async () => {
     if (!profileId) {
@@ -158,7 +174,6 @@ function TenderResultCard({ tender, profileId, profileError }) {
     setMatchResult(null);
     try {
       const res = await api.post('/readiness-check', {
-        // Prefer OCID for the eTenders release endpoint; fall back to ids
         tender_id: tender.ocid || tender.tenderId || tender.id,
         company_profile_id: profileId
       });
@@ -224,13 +239,6 @@ function TenderResultCard({ tender, profileId, profileError }) {
           Save to Workspace
         </Button>
         <Button
-          variant="contained"
-          onClick={handleGetSummary}
-          disabled={loading}
-        >
-          {loading ? 'Loading...' : 'AI Summary'}
-        </Button>
-        <Button
           variant="outlined"
           onClick={handleMatchTender}
           disabled={matchLoading}
@@ -238,7 +246,7 @@ function TenderResultCard({ tender, profileId, profileError }) {
           {matchLoading ? 'Matching...' : 'Match Tender'}
         </Button>
       </Stack>
-      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+  {/* AI summary error removed */}
       {summary && (
         <Paper variant="outlined" sx={{ mt: 2, p: 2 }}>
           <Typography variant="subtitle1">AI Summary</Typography>

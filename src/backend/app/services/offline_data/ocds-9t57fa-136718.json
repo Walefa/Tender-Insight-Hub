@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136718",
+  "id": "ocds-9t57fa-136718-2025-10-14",
+  "date": "2025-10-14T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136718",
+    "title": "RFQ28674 KSIA",
+    "status": "active",
+    "mainProcurementCategory": "services",
+    "additionalProcurementCategories": [
+      "services"
+    ],
+    "description": "\r\nTHE APPOINTMENT OF A CONTRACTOR FOR THE REFURBISHMENT OF FIRE DOORS AT KING SHAKA INTERNATIONAL AIRPORT\r\n",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "e92e0189-6c10-4352-a829-899f88178ef0",
+        "documentType": "basic",
+        "title": "NEC ECC Contract.pdf",
+        "description": "NEC ECC Contract.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=e92e0189-6c10-4352-a829-899f88178ef0.pdf&downloadedFileName=NEC%20ECC%20Contract.pdf",
+        "datePublished": "2025-10-14T03:43:25Z",
+        "dateModified": "2025-10-14T03:43:25Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-14T00:00:00Z",
+      "endDate": "2025-11-07T16:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "11",
+      "name": "Airports Company of South Africa"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Quotation",
+    "briefingSession": {
+      "isSession": true,
+      "compulsory": true,
+      "date": "2025-10-16T12:00:00Z",
+      "venue": "King Shaka International Airport, Reception, Ground Floor. Multi Storey Office Block, Located Opposi"
+    },
+    "contactPerson": {
+      "name": "Mlungisi Professor Mgobhozi",
+      "email": "Tenders3.ksia@airports.co.za",
+      "telephoneNumber": "032-436-6198"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "11",
+    "name": "Airports Company of South Africa"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

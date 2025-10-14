@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136707",
+  "id": "ocds-9t57fa-136707-2025-10-13",
+  "date": "2025-10-13T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136707",
+    "title": "JDADFP/ ADVISORY/25",
+    "status": "active",
+    "mainProcurementCategory": "",
+    "additionalProcurementCategories": [
+      "consultingServices"
+    ],
+    "description": "RFP \u2013 ESTABLISHMENT OF A PANEL OF PROFESSIONAL SERVICE PROVIDERS FOR A PERIOD OF THREE (3) YEARS \u2013 RESOURCE MOBILISATION, TECHNICAL AND TRANSACTION ADVISORY SERVICES AND PUBLIC PRIVATE PARTNERSHIPS",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "61cce595-6c42-4b59-b13a-20e30682220c",
+        "documentType": "basic",
+        "title": "RFP-APPOINT-A-TRANSACTION ADVISORY PANEL-REVISED SPECIFICATION_13.10.25.pdf",
+        "description": "RFP-APPOINT-A-TRANSACTION ADVISORY PANEL-REVISED SPECIFICATION_13.10.25.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=61cce595-6c42-4b59-b13a-20e30682220c.pdf&downloadedFileName=RFP-APPOINT-A-TRANSACTION%20ADVISORY%20PANEL-REVISED%20SPECIFICATION_13.10.25.pdf",
+        "datePublished": "2025-10-13T19:41:44Z",
+        "dateModified": "2025-10-13T19:41:44Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-13T00:00:00Z",
+      "endDate": "2025-11-17T12:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "274",
+      "name": "Johannesburg Development Agency"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Bid(Open-Tender)",
+    "briefingSession": {
+      "isSession": true,
+      "compulsory": true,
+      "date": "2025-10-24T10:00:00Z",
+      "venue": "JDA BUS FACTORY OFFICES, 3 Helen Joseph Street (Formerly President Street)"
+    },
+    "contactPerson": {
+      "name": "Yandisa Dinga",
+      "email": "ydinga@jda.org.za",
+      "telephoneNumber": "011-688-7878"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "274",
+    "name": "Johannesburg Development Agency"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

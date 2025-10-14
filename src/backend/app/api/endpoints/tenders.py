@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, Query, Body
 from typing import List, Optional
 import httpx
@@ -201,10 +202,24 @@ async def check_readiness(
     """Check company readiness for a tender. Only for basic/pro plans."""
     from app.utils.plan_utils import require_plan
     require_plan(current_user.team, ["basic", "pro"])
-    # Get tender requirements
+    # Debug: Log incoming request and tender_id
+    logger.info(f"[readiness-check] Incoming request: {request}")
+    logger.info(f"[readiness-check] Fetching tender_id: {request.tender_id}")
     tender_data = await ocds_service.get_tender_details(request.tender_id)
+    logger.info(f"[readiness-check] Fetched tender_data: {tender_data}")
     if not tender_data:
-        raise HTTPException(status_code=404, detail="Tender not found")
+        # Try offline fallback
+        logger.warning(f"[readiness-check] Online fetch failed for tender_id: {request.tender_id}, trying offline cache...")
+        try:
+            offline_data = ocds_service._load_offline_release(request.tender_id)
+            logger.info(f"[readiness-check] Offline fallback data: {offline_data}")
+            if offline_data:
+                tender_data = offline_data
+        except Exception as e:
+            logger.error(f"[readiness-check] Offline fallback error: {e}")
+    if not tender_data:
+        logger.error(f"[readiness-check] Tender not found for id: {request.tender_id} (online and offline)")
+        raise HTTPException(status_code=404, detail="Tender not found (online and offline)")
     # Reload user with company profile to avoid lazy-loading issues
     user_with_profile = await db.execute(
         select(User)
