@@ -34,7 +34,7 @@ Tender Insight Hub is a SaaS platform for managing tenders, designed for teams a
 
 ### Prerequisites
  - Node.js & npm (for frontend)
- - Python 3.10+ & pip (for backend)
+ - Python 3.11(the required packages have conflicts with the latest version of Python, hence you have to revert to version 3.11.0 ) & pip (for backend)
  - PostgreSQL (production) or SQLite (dev)
 
 ### Frontend Setup
@@ -48,7 +48,7 @@ Visit `http://localhost:5173` in your browser.
 ### Backend Setup
 ```powershell
 cd src/backend
-python -m venv venv
+python -3.11 -m venv venv (It is important to include the version)
 .\venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
@@ -61,8 +61,7 @@ cd src/backend
 alembic upgrade head
 ```
 
-### Running Tests
- - Backend: `pytest src/backend/tests`
+### Running Tests - Backend: `pytest src/backend/tests`
  - Frontend: (manual, no framework specified)
 
 ## Environment Variables

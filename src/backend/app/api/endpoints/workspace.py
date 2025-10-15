@@ -72,8 +72,7 @@ async def delete_workspace_item(
 ):
 	"""Remove a workspace item belonging to the current user's team."""
 	team = current_user.team
-	# Deleting an item should be allowed on all plans; if you want to restrict, uncomment:
-	# require_plan(team, ["basic", "pro"])
+	
 	result = await db.execute(
 		select(WorkspaceItem).where(WorkspaceItem.id == item_id, WorkspaceItem.team_id == team.id)
 	)
