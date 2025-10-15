@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136824",
+  "id": "ocds-9t57fa-136824-2025-10-15",
+  "date": "2025-10-15T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136824",
+    "title": "E2008MWPGCD",
+    "status": "planning",
+    "mainProcurementCategory": "",
+    "additionalProcurementCategories": [
+      "consultingServices"
+    ],
+    "description": "The Appointment of a Specialist Environmental Services Provider for GCD for a period of 4 (four)years",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "5f1f3441-f49e-45eb-b21a-359e15ae72a2",
+        "documentType": "basic",
+        "title": "Annexure N_Pricing  Schedule_GCD Environmental Services Provider(C.2.2).xlsx",
+        "description": "Annexure N_Pricing  Schedule_GCD Environmental Services Provider(C.2.2).xlsx",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=5f1f3441-f49e-45eb-b21a-359e15ae72a2.xlsx&downloadedFileName=Annexure%20N_Pricing%20%20Schedule_GCD%20Environmental%20Services%20Provider%28C.2.2%29.xlsx",
+        "datePublished": "2025-10-14T15:40:28Z",
+        "dateModified": "2025-10-14T15:40:28Z",
+        "format": "xlsx",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-15T00:00:00Z",
+      "endDate": "2025-11-06T10:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "167",
+      "name": "ESKOM"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Bid(Open-Tender)",
+    "briefingSession": {
+      "isSession": true,
+      "compulsory": false,
+      "date": "2025-10-28T10:00:00Z",
+      "venue": "https://teams.microsoft.com/l/meetup-join/19%3ameeting_MmRiNTU0YzctNjRiNC00ZjgyLTliNzItZDFhYWZjMGIxZ"
+    },
+    "contactPerson": {
+      "name": "Thandiwe Gxabuza",
+      "email": "kp14@eskom.co.za",
+      "telephoneNumber": "011-800-6724"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "167",
+    "name": "ESKOM"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

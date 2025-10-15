@@ -2,12 +2,12 @@
 
 ## Core Team
 
-| Name         | Role                | GitHub        | Responsibilities                |
-|--------------|---------------------|---------------|---------------------------------|
-| Ezekiel Tumelo Reiners       | Frontend developer        | @Lu-Nia       | Architecture, backend, roadmap  |
-| Walefa Bosele | Backend developer  Project Lead             | @Walefa      | Backend API and components Development              |
-| Amogelang Collin Jnr Plaatjie | Software Engineer             | @Collinjr012      | Software Architecture,activity flow               |
-| Mothibi Isaac Bantjies | Project Manager              | @Mothibi-Isaac     | project scope,project plan and task deadlines management              |
+| Name         | Role                | GitHub        |
+|--------------|---------------------|---------------|
+| Ezekiel Tumelo Reiners       | Data Analysis       | @Lu-Nia       | 
+| Walefa Bosele | Software engineer             | @Walefa      |
+| Amogelang Collin Jnr Plaatjie |Project Manager             | @Collinjr012      | 
+| Mothibi Isaac Bantjies | System Analyst              | @Mothibi-Isaac     | 
 
 ## Contributors
 

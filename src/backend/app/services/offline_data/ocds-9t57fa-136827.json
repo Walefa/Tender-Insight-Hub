@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136827",
+  "id": "ocds-9t57fa-136827-2025-10-14",
+  "date": "2025-10-14T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136827",
+    "title": "ID: 3259968",
+    "status": "active",
+    "mainProcurementCategory": "works",
+    "additionalProcurementCategories": [
+      "works"
+    ],
+    "description": "GROENPUNT PRISON: OPERATION OF WATER AND SEWER TREATMENTPLANTS ( MONTH TO MONTH CONTRACT NOT EXCEEDING 2 MONTHS)",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "14773a9e-5c25-43c0-90d0-4fa032c60991",
+        "documentType": "basic",
+        "title": "GROENPUNT PRISON-OPERATION OF WATER AND SEWER TREATMENT ID-3259968.pdf",
+        "description": "GROENPUNT PRISON-OPERATION OF WATER AND SEWER TREATMENT ID-3259968.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=14773a9e-5c25-43c0-90d0-4fa032c60991.pdf&downloadedFileName=GROENPUNT%20PRISON-OPERATION%20OF%20WATER%20AND%20SEWER%20TREATMENT%20ID-3259968.pdf",
+        "datePublished": "2025-10-14T15:44:19Z",
+        "dateModified": "2025-10-14T15:44:19Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-14T00:00:00Z",
+      "endDate": "2025-10-29T11:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "555",
+      "name": "Public Works"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Quotation",
+    "briefingSession": {
+      "isSession": true,
+      "compulsory": true,
+      "date": "0001-01-01T00:00:00Z",
+      "venue": "DEPARTMENT OF PUBLIC WORKS AND INFRASTRUCTURE : MAINHALL 18 PRESIDENT BRAND STREET BLOEMFONTEIN 9300"
+    },
+    "contactPerson": {
+      "name": "Mashaile Mokhatla ",
+      "email": "Mashaile.Mokhatla@dpw.gov.za",
+      "telephoneNumber": "051-408-7361"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "555",
+    "name": "Public Works"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136828",
+  "id": "ocds-9t57fa-136828-2025-10-14",
+  "date": "2025-10-14T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136828",
+    "title": "ADVERTISED RFQ 01/10/2025",
+    "status": "active",
+    "mainProcurementCategory": "",
+    "additionalProcurementCategories": [
+      "consultingServices"
+    ],
+    "description": "ADVERTISED RFQ 01/10/2025: REQUEST FOR QUOTATION: SERVICE PROVIDER TO DO AN EMERGENCY EVACUATION PLAN",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "8bee065c-6787-4ba6-b064-1156ad2370f0",
+        "documentType": "basic",
+        "title": "RFQ 01 OF 10 OF 2025  ADVERT.pdf",
+        "description": "RFQ 01 OF 10 OF 2025  ADVERT.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=8bee065c-6787-4ba6-b064-1156ad2370f0.pdf&downloadedFileName=RFQ%2001%20OF%2010%20OF%202025%20%20ADVERT.pdf",
+        "datePublished": "2025-10-14T15:44:29Z",
+        "dateModified": "2025-10-14T15:44:29Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-14T00:00:00Z",
+      "endDate": "2025-10-24T12:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "528",
+      "name": "Oudtshoorn Municipality"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Quotation",
+    "briefingSession": {
+      "isSession": false,
+      "compulsory": false,
+      "date": "0001-01-01T00:00:00Z",
+      "venue": "N/A"
+    },
+    "contactPerson": {
+      "name": "MS. J. ROLLISON",
+      "email": "janina@oudtmun.gov.za",
+      "telephoneNumber": "044-203-3178"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "528",
+    "name": "Oudtshoorn Municipality"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

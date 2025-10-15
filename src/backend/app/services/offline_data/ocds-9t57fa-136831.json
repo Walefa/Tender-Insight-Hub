@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136831",
+  "id": "ocds-9t57fa-136831-2025-10-14",
+  "date": "2025-10-14T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136831",
+    "title": "RFB053/24/25",
+    "status": "active",
+    "mainProcurementCategory": "goods",
+    "additionalProcurementCategories": [
+      "goods"
+    ],
+    "description": "Placement of Automated Dried Blood Spot (DBS) Punching System with PCR set up including consumables, service and maintenance for a period of five (5) years.",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "bc9fea60-4428-4cbf-8d54-897b23c67a18",
+        "documentType": "basic",
+        "title": "RFB053_24-25_Bid Document_Reviewed.pdf",
+        "description": "RFB053_24-25_Bid Document_Reviewed.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=bc9fea60-4428-4cbf-8d54-897b23c67a18.pdf&downloadedFileName=RFB053_24-25_Bid%20Document_Reviewed.pdf",
+        "datePublished": "2025-10-14T15:56:41Z",
+        "dateModified": "2025-10-14T15:56:41Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-14T00:00:00Z",
+      "endDate": "2025-11-07T11:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "458",
+      "name": "National Health Laboratory Service"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Bid(Open-Tender)",
+    "briefingSession": {
+      "isSession": true,
+      "compulsory": true,
+      "date": "0001-01-01T00:00:00Z",
+      "venue": "National Health Laboratory Service De Korte Street & Hospital Street Braamfontein Johannesburg"
+    },
+    "contactPerson": {
+      "name": "Lesedi Manganye",
+      "email": "lesedi.manganye@nhls.ac.za",
+      "telephoneNumber": "011-386-6165"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "458",
+    "name": "National Health Laboratory Service"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

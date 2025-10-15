@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136782",
+  "id": "ocds-9t57fa-136782-2025-10-14",
+  "date": "2025-10-14T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136782",
+    "title": "066/2025/EWSS/TRAINING/RFQ",
+    "status": "active",
+    "mainProcurementCategory": "",
+    "additionalProcurementCategories": [
+      "consultingServices"
+    ],
+    "description": "APPOINTMENT OF A PROFESSIONAL SERVICE PROVIDER FOR THE PROVISION OF VARIOUS\r\nHEALTH AND SAFETY TRAINING\r\n",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "3df4fee3-8ac9-4296-98de-76e7e2c7552f",
+        "documentType": "basic",
+        "title": "RFQ For Health And Safety Training and Advisory Services.pdf",
+        "description": "RFQ For Health And Safety Training and Advisory Services.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=3df4fee3-8ac9-4296-98de-76e7e2c7552f.pdf&downloadedFileName=RFQ%20For%20Health%20And%20Safety%20Training%20and%20Advisory%20Services.pdf",
+        "datePublished": "2025-10-14T12:44:05Z",
+        "dateModified": "2025-10-14T12:44:05Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-14T00:00:00Z",
+      "endDate": "2025-10-28T11:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "665",
+      "name": "Trans-Caledon Tunnel Authority"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Quotation",
+    "briefingSession": {
+      "isSession": true,
+      "compulsory": false,
+      "date": "2025-10-20T11:00:00Z",
+      "venue": "Online: Teams"
+    },
+    "contactPerson": {
+      "name": "Tefo",
+      "email": "tenders06@tcta.co.za",
+      "telephoneNumber": "012-683-1217"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "665",
+    "name": "Trans-Caledon Tunnel Authority"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

@@ -1,0 +1,74 @@
+{
+  "ocid": "ocds-9t57fa-136866",
+  "id": "ocds-9t57fa-136866-2025-10-15",
+  "date": "2025-10-15T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136866",
+    "title": "HO/ICT/10364846/10/2025",
+    "status": "active",
+    "mainProcurementCategory": "services",
+    "additionalProcurementCategories": [
+      "services"
+    ],
+    "description": "REQUEST FOR QUOTATION FOR PROGRAMME / PROJECT MANAGERS (IT/ICT/ AND SAP) OVER A PERIOD OF UP TO 12 MONTHS\r\n\r\n",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "e0a3a6fb-8e42-475c-aa48-2caafcebcbe5",
+        "documentType": "basic",
+        "title": "RFQ   SAP PROJECT MANAGEMENT RESOURCES OCT 2025.docx",
+        "description": "RFQ   SAP PROJECT MANAGEMENT RESOURCES OCT 2025.docx",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=e0a3a6fb-8e42-475c-aa48-2caafcebcbe5.docx&downloadedFileName=RFQ%20%20%20SAP%20PROJECT%20MANAGEMENT%20RESOURCES%20OCT%202025.docx",
+        "datePublished": "2025-10-15T06:33:39Z",
+        "dateModified": "2025-10-15T06:33:39Z",
+        "format": "docx",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-15T00:00:00Z",
+      "endDate": "2025-10-23T10:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "534",
+      "name": "Passenger Rail Agency of South Africa"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Quotation",
+    "briefingSession": {
+      "isSession": false,
+      "compulsory": false,
+      "date": "0001-01-01T00:00:00Z",
+      "venue": "N/A"
+    },
+    "contactPerson": {
+      "name": "Lulama Lufundo",
+      "email": "llufundo@prasa.com",
+      "telephoneNumber": "012-748-7221",
+      "faxNumber": "012-748-7221"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "534",
+    "name": "Passenger Rail Agency of South Africa"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}

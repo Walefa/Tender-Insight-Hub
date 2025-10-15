@@ -1,0 +1,73 @@
+{
+  "ocid": "ocds-9t57fa-136826",
+  "id": "ocds-9t57fa-136826-2025-10-14",
+  "date": "2025-10-14T00:00:00Z",
+  "tag": [
+    "compiled"
+  ],
+  "initiationType": "tender",
+  "tender": {
+    "id": "136826",
+    "title": "ZNB02363/00000/00/HOD/GEN/24/T",
+    "status": "active",
+    "mainProcurementCategory": "",
+    "additionalProcurementCategories": [
+      "consultingServices"
+    ],
+    "description": "THE ESTABLISHMENT OF A PANEL OF INDEPENDENT ROAD SAFETY AUDITORS FOR A PERIOD OF 3 YEARS",
+    "value": {
+      "amount": 0,
+      "currency": "ZAR"
+    },
+    "documents": [
+      {
+        "id": "fe5741d5-fe05-4232-95a8-bacdcda45749",
+        "documentType": "basic",
+        "title": "Invitation to Bid ZNB02363-00000-00-HOD-GEN-24-T.pdf",
+        "description": "Invitation to Bid ZNB02363-00000-00-HOD-GEN-24-T.pdf",
+        "url": "https://www.etenders.gov.za/home/Download?blobName=fe5741d5-fe05-4232-95a8-bacdcda45749.pdf&downloadedFileName=Invitation%20to%20Bid%20ZNB02363-00000-00-HOD-GEN-24-T.pdf",
+        "datePublished": "2025-10-14T15:43:05Z",
+        "dateModified": "2025-10-14T15:43:05Z",
+        "format": "pdf",
+        "language": "en"
+      }
+    ],
+    "tenderPeriod": {
+      "startDate": "2025-10-14T00:00:00Z",
+      "endDate": "2025-11-20T11:00:00Z"
+    },
+    "tenderers": [],
+    "procuringEntity": {
+      "id": "324",
+      "name": "Kwazulu Natal - Transport"
+    },
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Request for Bid(Open-Tender)",
+    "briefingSession": {
+      "isSession": true,
+      "compulsory": true,
+      "date": "0001-01-01T00:00:00Z",
+      "venue": "172 BURGER STREET, PIETERMARITZBURG, KZN DEPT. OF TRANSPORT- HEAD OFFICE, MC DONALD THEATRE"
+    },
+    "contactPerson": {
+      "name": "Simphiwe Nene",
+      "email": "Simphiwe.Nene@kzntransport.gov.za",
+      "telephoneNumber": "033-355-8615"
+    }
+  },
+  "planning": {
+    "rationale": "",
+    "budget": {
+      "description": " - "
+    },
+    "documents": []
+  },
+  "parties": [],
+  "buyer": {
+    "id": "324",
+    "name": "Kwazulu Natal - Transport"
+  },
+  "language": "en-za",
+  "awards": [],
+  "contracts": []
+}
