@@ -8,6 +8,11 @@ from app.schemas.schemas import CompanyProfileCreate, CompanyProfileUpdate, Comp
 from app.api.dependencies import get_current_active_user
 from typing import List
 from app.utils.plan_utils import require_plan
+from app.utils.sanitizer import InputSanitizer, InputValidator, SanitizationError
+from pydantic import ValidationError
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -18,29 +23,43 @@ async def create_company_profile(
 	db: AsyncSession = Depends(get_db)
 ):
 	"""Create a company profile for the current user's team. Only for basic/pro plans."""
-	from sqlalchemy.orm import selectinload
-	from sqlalchemy.future import select
-	# Eagerly load the team relationship
-	result = await db.execute(
-		select(User)
-		.options(
-			selectinload(User.team).selectinload(Team.company_profile)
+	try:
+		from sqlalchemy.orm import selectinload
+		from sqlalchemy.future import select
+		
+		# Validate plan
+		result = await db.execute(
+			select(User)
+			.options(
+				selectinload(User.team).selectinload(Team.company_profile)
+			)
+			.where(User.id == current_user.id)
 		)
-		.where(User.id == current_user.id)
-	)
-	user_with_team = result.scalar_one()
-	team = user_with_team.team
-	require_plan(team, ["basic", "pro"])
-	if team.company_profile:
-		raise HTTPException(status_code=400, detail="Company profile already exists for this team.")
-	db_profile = CompanyProfile(
-		**profile.dict(),
-		team_id=team.id
-	)
-	db.add(db_profile)
-	await db.commit()
-	await db.refresh(db_profile)
-	return db_profile
+		user_with_team = result.scalar_one()
+		team = user_with_team.team
+		require_plan(team, ["basic", "pro"])
+		
+		if team.company_profile:
+			raise HTTPException(status_code=400, detail="Company profile already exists for this team.")
+		
+		db_profile = CompanyProfile(
+			**profile.dict(),
+			team_id=team.id
+		)
+		db.add(db_profile)
+		await db.commit()
+		await db.refresh(db_profile)
+		return db_profile
+	
+	except ValidationError as e:
+		logger.warning(f"Validation error in create_company_profile: {e}")
+		raise HTTPException(status_code=400, detail="Invalid company profile data")
+	except HTTPException:
+		raise
+	except Exception as e:
+		logger.error(f"Unexpected error in create_company_profile: {e}")
+		await db.rollback()
+		raise HTTPException(status_code=500, detail="An unexpected error occurred")
 
 @router.get("/company-profile", response_model=CompanyProfileSchema)
 async def get_company_profile(
@@ -48,20 +67,29 @@ async def get_company_profile(
 	db: AsyncSession = Depends(get_db)
 ):
 	"""Get the company profile for the current user's team."""
-	from sqlalchemy.orm import selectinload
-	from sqlalchemy.future import select
-	result = await db.execute(
-		select(User)
-		.options(
-			selectinload(User.team).selectinload(Team.company_profile)
+	try:
+		from sqlalchemy.orm import selectinload
+		from sqlalchemy.future import select
+		
+		result = await db.execute(
+			select(User)
+			.options(
+				selectinload(User.team).selectinload(Team.company_profile)
+			)
+			.where(User.id == current_user.id)
 		)
-		.where(User.id == current_user.id)
-	)
-	user_with_team = result.scalar_one()
-	team = user_with_team.team
-	if not team.company_profile:
-		raise HTTPException(status_code=404, detail="Company profile not found.")
-	return team.company_profile
+		user_with_team = result.scalar_one()
+		team = user_with_team.team
+		
+		if not team.company_profile:
+			raise HTTPException(status_code=404, detail="Company profile not found.")
+		
+		return team.company_profile
+	except HTTPException:
+		raise
+	except Exception as e:
+		logger.error(f"Unexpected error in get_company_profile: {e}")
+		raise HTTPException(status_code=500, detail="An unexpected error occurred")
 
 @router.put("/company-profile", response_model=CompanyProfileSchema)
 async def update_company_profile(
@@ -70,23 +98,41 @@ async def update_company_profile(
 	db: AsyncSession = Depends(get_db)
 ):
 	"""Update the company profile for the current user's team. Only for basic/pro plans."""
-	from sqlalchemy.orm import selectinload
-	from sqlalchemy.future import select
-	result = await db.execute(
-		select(User)
-		.options(
-			selectinload(User.team).selectinload(Team.company_profile)
+	try:
+		from sqlalchemy.orm import selectinload
+		from sqlalchemy.future import select
+		
+		# Validate plan
+		result = await db.execute(
+			select(User)
+			.options(
+				selectinload(User.team).selectinload(Team.company_profile)
+			)
+			.where(User.id == current_user.id)
 		)
-		.where(User.id == current_user.id)
-	)
-	user_with_team = result.scalar_one()
-	team = user_with_team.team
-	require_plan(team, ["basic", "pro"])
-	db_profile = team.company_profile
-	if not db_profile:
-		raise HTTPException(status_code=404, detail="Company profile not found.")
-	for field, value in profile_update.dict(exclude_unset=True).items():
-		setattr(db_profile, field, value)
-	await db.commit()
-	await db.refresh(db_profile)
-	return db_profile
+		user_with_team = result.scalar_one()
+		team = user_with_team.team
+		require_plan(team, ["basic", "pro"])
+		
+		db_profile = team.company_profile
+		if not db_profile:
+			raise HTTPException(status_code=404, detail="Company profile not found.")
+		
+		# Update only provided fields
+		for field, value in profile_update.dict(exclude_unset=True).items():
+			if value is not None:
+				setattr(db_profile, field, value)
+		
+		await db.commit()
+		await db.refresh(db_profile)
+		return db_profile
+	
+	except ValidationError as e:
+		logger.warning(f"Validation error in update_company_profile: {e}")
+		raise HTTPException(status_code=400, detail="Invalid company profile data")
+	except HTTPException:
+		raise
+	except Exception as e:
+		logger.error(f"Unexpected error in update_company_profile: {e}")
+		await db.rollback()
+		raise HTTPException(status_code=500, detail="An unexpected error occurred")

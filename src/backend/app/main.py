@@ -1,8 +1,18 @@
-﻿from fastapi import FastAPI
+﻿from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+# from starlette.middleware.gzip import GZIPMiddleware  # GZIPMiddleware not available in current Starlette version
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
+from pydantic import ValidationError
 from app.api.endpoints import auth, companies, tenders, public, workspace, users, invitations, team
 from app.core.database import engine
 from app.models.sql_models import Base
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Tender Insight Hub",
@@ -10,17 +20,95 @@ app = FastAPI(
     description="University Project - Tender Management System"
 )
 
-# Add CORS middleware
+# ============================================================================
+# SECURITY MIDDLEWARE - Add in order
+# ============================================================================
+
+# 1. Trusted Host Middleware - Only allow requests from trusted hosts
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["localhost", "127.0.0.1", "*.localhost", "your-domain.com"]
+)
+
+# 2. CORS Middleware - Control cross-origin requests with strict settings
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
+        "http://localhost:3000",      # Frontend dev
+        "http://localhost:5173",      # Vite dev
+        "http://localhost:5174",      # Alternative Vite port
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        # Production URLs - uncomment and update
+        # "https://your-domain.com",
+        # "https://www.your-domain.com",
     ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Accept",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers",
+    ],
+    max_age=600,  # Cache preflight for 600 seconds
 )
+
+# 3. GZIP Middleware - Compress responses
+# app.add_middleware(GZIPMiddleware, minimum_size=1000)  # GZIPMiddleware not available in current Starlette version
+
+# ============================================================================
+# CUSTOM SECURITY HEADERS MIDDLEWARE
+# ============================================================================
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Add security headers to all responses"""
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        
+        # Prevent MIME type sniffing
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        
+        # XSS protection (legacy but good for older browsers)
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        
+        # Clickjacking protection
+        response.headers["X-Frame-Options"] = "DENY"
+        
+        # Referrer policy
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        
+        # Permissions policy
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        
+        return response
+
+app.add_middleware(SecurityHeadersMiddleware)
+
+# ============================================================================
+# EXCEPTION HANDLERS - Return safe error messages
+# ============================================================================
+
+@app.exception_handler(ValidationError)
+async def validation_exception_handler(request: Request, exc: ValidationError):
+    """Handle Pydantic validation errors with safe message"""
+    logger.warning(f"Validation error: {exc}")
+    return JSONResponse(
+        status_code=400,
+        content={"detail": "Invalid input data"}
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle uncaught exceptions - log details but return generic message"""
+    logger.error(f"Unexpected error: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An unexpected error occurred"}
+    )
 
 # Register all routers for full OpenAPI docs
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])

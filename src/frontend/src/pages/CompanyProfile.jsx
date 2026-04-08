@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Box, Typography, Button, TextField, CircularProgress, Alert, Paper, Stack } from '@mui/material';
 import api from '../utils/api';
 import { AuthContext } from '../context/AuthContext.jsx';
+import { validateCompanyProfileForm } from '../utils/validation';
 
 const CompanyProfile = () => {
   const { user } = useContext(AuthContext);
@@ -10,6 +11,7 @@ const CompanyProfile = () => {
   const [error, setError] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [planUpgrading, setPlanUpgrading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [form, setForm] = useState({
     company_name: '',
     industry_sector: '',
@@ -58,7 +60,27 @@ const CompanyProfile = () => {
   };
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSave = async () => {
+    setFieldErrors({});
     setLoading(true);
+    
+    // Validate form data
+    const { valid, errors } = validateCompanyProfileForm({
+      company_name: form.company_name,
+      industry_sector: form.industry_sector,
+      services_provided: Array.isArray(form.services_provided) ? form.services_provided : (form.services_provided || '').split(',').map(s => s.trim()).filter(Boolean),
+      certifications: form.certifications,
+      geographic_coverage: Array.isArray(form.geographic_coverage) ? form.geographic_coverage : (form.geographic_coverage || '').split(',').map(s => s.trim()).filter(Boolean),
+      years_experience: parseInt(form.years_experience) || 0,
+      contact_info: form.contact_info
+    });
+    
+    if (!valid) {
+      setFieldErrors(errors);
+      setError('Please fix validation errors');
+      setLoading(false);
+      return;
+    }
+    
     try {
       const safeParseJSON = (value) => {
         if (!value) return {};
@@ -136,13 +158,69 @@ const CompanyProfile = () => {
             )}
             {(editMode || !profile) ? (
               <Stack spacing={2}>
-                <TextField label="Company Name" name="company_name" value={form.company_name || ''} onChange={handleChange} fullWidth />
-                <TextField label="Industry Sector" name="industry_sector" value={form.industry_sector || ''} onChange={handleChange} fullWidth />
-                <TextField label="Services Provided (comma separated)" name="services_provided" value={form.services_provided || ''} onChange={handleChange} fullWidth />
-                <TextField label="Certifications (JSON)" name="certifications" value={form.certifications || ''} onChange={handleChange} fullWidth />
-                <TextField label="Geographic Coverage (comma separated)" name="geographic_coverage" value={form.geographic_coverage || ''} onChange={handleChange} fullWidth />
-                <TextField label="Years of Experience" name="years_experience" value={form.years_experience || ''} onChange={handleChange} fullWidth />
-                <TextField label="Contact Information (JSON)" name="contact_info" value={form.contact_info || ''} onChange={handleChange} fullWidth />
+                <TextField 
+                  label="Company Name" 
+                  name="company_name" 
+                  value={form.company_name || ''} 
+                  onChange={handleChange} 
+                  fullWidth 
+                  error={!!fieldErrors.company_name}
+                  helperText={fieldErrors.company_name}
+                />
+                <TextField 
+                  label="Industry Sector" 
+                  name="industry_sector" 
+                  value={form.industry_sector || ''} 
+                  onChange={handleChange} 
+                  fullWidth
+                  error={!!fieldErrors.industry_sector}
+                  helperText={fieldErrors.industry_sector}
+                />
+                <TextField 
+                  label="Services Provided (comma separated)" 
+                  name="services_provided" 
+                  value={form.services_provided || ''} 
+                  onChange={handleChange} 
+                  fullWidth
+                  error={!!fieldErrors.services_provided}
+                  helperText={fieldErrors.services_provided}
+                />
+                <TextField 
+                  label="Certifications (JSON)" 
+                  name="certifications" 
+                  value={form.certifications || ''} 
+                  onChange={handleChange} 
+                  fullWidth
+                  error={!!fieldErrors.certifications}
+                  helperText={fieldErrors.certifications}
+                />
+                <TextField 
+                  label="Geographic Coverage (comma separated)" 
+                  name="geographic_coverage" 
+                  value={form.geographic_coverage || ''} 
+                  onChange={handleChange} 
+                  fullWidth
+                  error={!!fieldErrors.geographic_coverage}
+                  helperText={fieldErrors.geographic_coverage}
+                />
+                <TextField 
+                  label="Years of Experience" 
+                  name="years_experience" 
+                  value={form.years_experience || ''} 
+                  onChange={handleChange} 
+                  fullWidth
+                  error={!!fieldErrors.years_experience}
+                  helperText={fieldErrors.years_experience}
+                />
+                <TextField 
+                  label="Contact Information (JSON)" 
+                  name="contact_info" 
+                  value={form.contact_info || ''} 
+                  onChange={handleChange} 
+                  fullWidth
+                  error={!!fieldErrors.contact_info}
+                  helperText={fieldErrors.contact_info}
+                />
                 <Button variant="contained" onClick={handleSave}>{profile ? 'Save' : 'Create'}</Button>
               </Stack>
             ) : (
