@@ -1,32 +1,161 @@
-/* Global app polish; most styling comes from MUI theme */
+/* Modern app styling with sophisticated gradients and effects */
+
 :root {
-	--app-bg-gradient-light: radial-gradient(1200px 800px at -10% -20%, rgba(46, 125, 50, 0.06) 0%, rgba(0,0,0,0) 60%),
-														radial-gradient(800px 600px at 120% -10%, rgba(21, 101, 192, 0.06) 0%, rgba(0,0,0,0) 60%);
-	--app-bg-gradient-dark: radial-gradient(1200px 800px at -10% -20%, rgba(46, 125, 50, 0.15) 0%, rgba(0,0,0,0) 60%),
-													radial-gradient(800px 600px at 120% -10%, rgba(21, 101, 192, 0.15) 0%, rgba(0,0,0,0) 60%);
+	--gradient-light-primary: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%);
+	--gradient-light-secondary: radial-gradient(600px 400px at 20% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 50%);
+	--gradient-light-accent: radial-gradient(800px 600px at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
+	
+	--gradient-dark-primary: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%);
+	--gradient-dark-secondary: radial-gradient(600px 400px at 20% 30%, rgba(16, 185, 129, 0.2) 0%, transparent 50%);
+	--gradient-dark-accent: radial-gradient(800px 600px at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
 }
 
-html, body, #root { min-height: 100vh; }
+html, body, #root { 
+	min-height: 100vh;
+}
 
-/* Subtle gradient background layer under the theme */
+/* Light mode background */
+body.light {
+	background-color: #f8fafc;
+	background-image: 
+		var(--gradient-light-secondary),
+		var(--gradient-light-accent);
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+}
+
 body.light #root {
-	background-image: var(--app-bg-gradient-light);
+	background-image: 
+		var(--gradient-light-secondary),
+		var(--gradient-light-accent);
+	background-attachment: fixed;
 	background-repeat: no-repeat;
 }
+
+/* Dark mode background */
+body.dark {
+	background-color: #0f1419;
+	background-image: 
+		var(--gradient-dark-secondary),
+		var(--gradient-dark-accent);
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+}
+
 body.dark #root {
-	background-image: var(--app-bg-gradient-dark);
+	background-image: 
+		var(--gradient-dark-secondary),
+		var(--gradient-dark-accent);
+	background-attachment: fixed;
 	background-repeat: no-repeat;
 }
 
-/* Shared card helper for places using className="card" */
-.card {
-	padding: 1rem;
-	border-radius: 12px;
-	background: rgba(255,255,255,0.7);
-	box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-	backdrop-filter: blur(8px);
+/* Smooth transitions for theme changes */
+html, body, #root {
+	transition: background-color 0.3s ease;
 }
 
-/* Section spacing helpers */
-.section { margin-bottom: 1.25rem; }
-.section-lg { margin-bottom: 2rem; }
+/* Utility classes */
+.card {
+	background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+	backdrop-filter: blur(10px);
+	border: 1px solid rgba(255,255,255,0.5);
+	padding: 1.5rem;
+	border-radius: 14px;
+	box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark .card {
+	background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+	border: 1px solid rgba(255,255,255,0.1);
+	box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 20px 25px rgba(0,0,0,0.1);
+	border-color: rgba(16, 185, 129, 0.3);
+}
+
+body.dark .card:hover {
+	box-shadow: 0 20px 25px rgba(0,0,0,0.4);
+	border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* Section spacing */
+.section { 
+	margin-bottom: 1.5rem;
+	animation: fadeInUp 0.5s ease;
+}
+
+.section-lg { 
+	margin-bottom: 2.5rem;
+	animation: fadeInUp 0.5s ease;
+}
+
+/* Smooth fade-in animation */
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Page transitions */
+.page-content {
+	animation: fadeInUp 0.4s ease;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark ::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+	transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(0, 0, 0, 0.35);
+}
+
+body.dark ::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+body.dark ::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.35);
+}
+
+/* Focus states for accessibility */
+*:focus-visible {
+	outline: 2px solid #10b981;
+	outline-offset: 2px;
+}
+
+/* Text selection */
+::selection {
+	background-color: #10b981;
+	color: white;
+}
+
+body.dark ::selection {
+	background-color: #10b981;
+	color: white;
+}

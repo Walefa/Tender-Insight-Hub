@@ -69,15 +69,63 @@ const App = () => {
       <AuthProvider>
         <PlanProvider>
           <Router>
-            <AppBar position="sticky" color="transparent" elevation={0} sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}>
-              <Toolbar sx={{ display: 'flex', gap: 2 }}>
-                <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>Tender Insight Hub</Typography>
-                <Button color="primary" href="/dashboard">Dashboard</Button>
-                <Button color="primary" href="/search">Search</Button>
-                <Button color="primary" href="/profile">Company Profile</Button>
-                <Button color="primary" href="/team">Team</Button>
-                <Button color="primary" href="/plan">Plan</Button>
-                <IconButton onClick={toggleMode} color="inherit" sx={{ ml: 1 }}>
+            <AppBar position="sticky" elevation={0} sx={{ 
+              backdropFilter: 'blur(10px)',
+              borderBottom: theme => `1px solid ${theme.palette.divider}`,
+              backgroundColor: theme => mode === 'light' ? 'rgba(255, 255, 255, 0.85)' : 'rgba(26, 32, 44, 0.85)'
+            }}>
+              <Toolbar sx={{ display: 'flex', gap: 2, minHeight: 68 }}>
+                <Typography variant="h6" sx={{ 
+                  flexGrow: 1, 
+                  fontWeight: 800,
+                  background: 'linear-gradient(135deg, #10b981, #3b82f6)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontSize: '1.3rem'
+                }}>
+                  Tender Insight Hub
+                </Typography>
+                <Button color="inherit" href="/dashboard" sx={{ 
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  '&:hover': { color: 'primary.main', transform: 'translateY(-1px)' }
+                }}>
+                  Dashboard
+                </Button>
+                <Button color="inherit" href="/search" sx={{ 
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  '&:hover': { color: 'primary.main', transform: 'translateY(-1px)' }
+                }}>
+                  Search
+                </Button>
+                <Button color="inherit" href="/profile" sx={{ 
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  '&:hover': { color: 'primary.main', transform: 'translateY(-1px)' }
+                }}>
+                  Profile
+                </Button>
+                <Button color="inherit" href="/team" sx={{ 
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  '&:hover': { color: 'primary.main', transform: 'translateY(-1px)' }
+                }}>
+                  Team
+                </Button>
+                <Button color="inherit" href="/plan" sx={{ 
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  '&:hover': { color: 'primary.main', transform: 'translateY(-1px)' }
+                }}>
+                  Plan
+                </Button>
+                <IconButton onClick={toggleMode} color="inherit" sx={{ 
+                  ml: 1,
+                  transition: 'all 0.2s ease',
+                  '&:hover': { transform: 'rotate(20deg) scale(1.05)' }
+                }}>
                   {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
                 </IconButton>
               </Toolbar>
